@@ -1,32 +1,31 @@
 import { Card } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
+import { PercentageBadge } from "@/components/ui/percentage-badge";
 
 interface KPICardProps {
   title: string;
   value: string;
   change: string;
   changeType: "positive" | "negative" | "neutral";
-  icon: LucideIcon;
 }
 
-export const KPICard = ({ title, value, change, changeType, icon: Icon }: KPICardProps) => {
-  const changeColor = {
-    positive: "text-success",
-    negative: "text-destructive",
-    neutral: "text-muted-foreground",
-  }[changeType];
+export const KPICard = ({ title, value, change, changeType }: KPICardProps) => {
+  // Extract percentage from change string
+  const percentageMatch = change.match(/([+-]?\d+\.?\d*)%/);
+  const percentageValue = percentageMatch ? parseFloat(percentageMatch[1]) : 0;
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-muted-foreground mb-1">{title}</p>
-          <p className="text-3xl font-bold text-foreground mb-2">{value}</p>
-          <p className={`text-sm font-medium ${changeColor}`}>{change}</p>
+    <Card className="glass-effect p-6 hover:border-accent/50 transition-all duration-300 group">
+      <div className="space-y-3">
+        <div className="flex items-start justify-between">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">{title}</p>
+          {percentageValue !== 0 && (
+            <PercentageBadge value={percentageValue} />
+          )}
         </div>
-        <div className="p-3 bg-accent rounded-lg">
-          <Icon className="w-6 h-6 text-accent-foreground" />
-        </div>
+        <p className="text-4xl md:text-5xl font-bold text-foreground animate-count-up group-hover:text-accent transition-colors">
+          {value}
+        </p>
+        <p className="text-sm text-muted-foreground">{change}</p>
       </div>
     </Card>
   );

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Building2, ChevronRight } from "lucide-react";
+import { Building2, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CircleButton } from "@/components/ui/circle-button";
 
 interface Agency {
   id: string;
@@ -25,44 +25,54 @@ export const AgencyList = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "良好":
-        return "bg-success/10 text-success";
+        return "text-success";
       case "注意":
-        return "bg-warning/10 text-warning";
+        return "text-warning";
       case "要対応":
-        return "bg-destructive/10 text-destructive";
+        return "text-destructive";
       default:
-        return "bg-muted text-muted-foreground";
+        return "text-muted-foreground";
     }
   };
 
   return (
-    <Card className="p-6">
+    <Card className="glass-effect p-6 animate-slide-up">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-primary" />
+          <div className="p-2 bg-accent/20 rounded-lg">
+            <Building2 className="w-5 h-5 text-accent" />
+          </div>
           <h3 className="text-lg font-semibold text-foreground">代理店一覧</h3>
         </div>
+        <span className="text-sm text-muted-foreground px-3 py-1 bg-muted/50 rounded-full">
+          {agencies.length}店舗
+        </span>
       </div>
       
       <div className="space-y-2">
-        {agencies.map((agency) => (
+        {agencies.map((agency, index) => (
           <div
             key={agency.id}
-            className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer"
+            className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 border border-transparent hover:border-accent/30 transition-all duration-300 group cursor-pointer"
             onClick={() => navigate(`/agency/${agency.id}`)}
+            style={{ animationDelay: `${index * 0.1}s` }}
           >
             <div className="flex-1">
-              <h4 className="font-medium text-foreground">{agency.name}</h4>
-              <p className="text-sm text-muted-foreground">{agency.branch}</p>
+              <p className="font-medium text-foreground group-hover:text-accent transition-colors">
+                {agency.name}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <span className={getStatusColor(agency.status)}>
+                  ● {agency.status}
+                </span>
+                {" • "}{agency.branch}
+              </p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-foreground">{agency.anp}</p>
-                <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(agency.status)}`}>
-                  {agency.status}
-                </span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <span className="text-lg font-bold text-foreground">{agency.anp}</span>
+              <CircleButton size="sm" onClick={(e) => e.stopPropagation()}>
+                <ArrowRight className="w-4 h-4" />
+              </CircleButton>
             </div>
           </div>
         ))}
