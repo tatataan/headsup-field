@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import { Sidebar } from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import AgencyDetail from "./pages/AgencyDetail";
@@ -14,22 +15,24 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="flex min-h-screen bg-background">
-          <Sidebar />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/agency/:id" element={<AgencyDetail />} />
-            <Route path="/topics/new" element={<TopicPost />} />
-            <Route path="/mobile" element={<MobileView />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="flex min-h-screen bg-background">
+            <Sidebar />
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/agency/:id" element={<AgencyDetail />} />
+              <Route path="/topics/new" element={<TopicPost />} />
+              <Route path="/mobile" element={<MobileView />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
