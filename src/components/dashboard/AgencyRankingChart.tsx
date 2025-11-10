@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { useNavigate } from "react-router-dom";
 
-interface AgencyRankingData {
+interface BranchRankingData {
   id: string;
   name: string;
   anp: number;
@@ -10,7 +10,7 @@ interface AgencyRankingData {
 }
 
 interface AgencyRankingChartProps {
-  data: AgencyRankingData[];
+  data: BranchRankingData[];
 }
 
 export const AgencyRankingChart = ({ data }: AgencyRankingChartProps) => {
@@ -32,7 +32,7 @@ export const AgencyRankingChart = ({ data }: AgencyRankingChartProps) => {
   return (
     <Card className="glass-effect hover:border-accent/50 transition-all duration-300">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">代理店別ANPランキング (Top 10)</CardTitle>
+        <CardTitle className="text-xl font-semibold">支店別ANPランキング (Top 10)</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>

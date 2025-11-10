@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Scatter, ScatterChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, ZAxis, Cell } from "recharts";
 import { useNavigate } from "react-router-dom";
 
-interface ActivityScatterData {
+interface BranchActivityData {
   id: string;
   name: string;
   visits: number;
@@ -11,7 +11,7 @@ interface ActivityScatterData {
 }
 
 interface ActivityScatterChartProps {
-  data: ActivityScatterData[];
+  data: BranchActivityData[];
 }
 
 export const ActivityScatterChart = ({ data }: ActivityScatterChartProps) => {
@@ -87,7 +87,7 @@ export const ActivityScatterChart = ({ data }: ActivityScatterChartProps) => {
               }}
             />
             <Scatter 
-              name="代理店" 
+              name="支店" 
               data={data} 
               onClick={handleClick}
               className="cursor-pointer"
