@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface BranchContractData {
   branchName: string;
@@ -15,13 +15,6 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
   // データを達成率でソート
   const sortedData = [...data].sort((a, b) => b.achievementRate - a.achievementRate);
 
-  // 達成率に応じた色を返す関数
-  const getAchievementColor = (rate: number) => {
-    if (rate >= 100) return "hsl(var(--success))";
-    if (rate >= 90) return "hsl(var(--warning))";
-    return "hsl(var(--destructive))";
-  };
-
   return (
     <Card className="border border-border">
       <CardHeader>
@@ -29,7 +22,7 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart 
+          <ComposedChart 
             data={sortedData}
             layout="vertical"
             margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
@@ -57,12 +50,14 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
             />
             <Legend />
             <Bar dataKey="contractCount" fill="hsl(var(--chart-2))" name="保有契約数" radius={[0, 4, 4, 0]} />
-            <Bar dataKey="achievementRate" name="達成率" radius={[0, 4, 4, 0]}>
-              {sortedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getAchievementColor(entry.achievementRate)} />
-              ))}
-            </Bar>
-          </BarChart>
+            <Line 
+              dataKey="achievementRate" 
+              stroke="hsl(var(--chart-3))" 
+              strokeWidth={2}
+              name="達成率"
+              dot={{ fill: "hsl(var(--chart-3))", r: 4 }}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>

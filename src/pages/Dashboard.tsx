@@ -5,6 +5,7 @@ import { BranchPerformanceChart } from "@/components/dashboard/BranchPerformance
 import { BranchContractChart } from "@/components/dashboard/BranchContractChart";
 import { DashboardCustomizer, DashboardConfig } from "@/components/dashboard/DashboardCustomizer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 
 const Dashboard = () => {
@@ -162,18 +163,17 @@ const Dashboard = () => {
           <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
         </div>
 
-        <Tabs defaultValue="performance" orientation="vertical" className="flex gap-6">
-          <TabsList className="flex flex-col h-fit w-48 bg-card border border-border">
-            <TabsTrigger value="performance" className="w-full justify-start data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+        <Tabs defaultValue="performance" className="space-y-6">
+          <TabsList className="bg-card border border-border">
+            <TabsTrigger value="performance" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               パフォーマンス
             </TabsTrigger>
-            <TabsTrigger value="issues" className="w-full justify-start data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="issues" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               経営課題
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1">
-            <TabsContent value="performance" className="m-0">
+          <TabsContent value="performance" className="space-y-8">
               {dashboardConfig.showKPIs && (
                 <>
                   {/* 上段：主要指標3つ */}
@@ -233,15 +233,116 @@ const Dashboard = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="issues" className="m-0">
-              <div className="space-y-6">
-                <div className="p-8 bg-card border border-border rounded-lg text-center">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">経営課題ダッシュボード</h3>
-                  <p className="text-muted-foreground">課題分析と改善提案を表示します</p>
+          <TabsContent value="issues" className="space-y-6">
+            {/* 低パフォーマンス支社 */}
+            <Card className="border border-border">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-destructive">要注意支社（達成率90%未満）</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {branchPerformanceData
+                    .filter(branch => branch.achievementRate < 90)
+                    .sort((a, b) => a.achievementRate - b.achievementRate)
+                    .map(branch => (
+                      <div key={branch.branchName} className="flex items-center justify-between p-4 bg-muted/50 rounded border border-border">
+                        <div>
+                          <h4 className="font-semibold text-foreground">{branch.branchName}</h4>
+                          <p className="text-sm text-muted-foreground">ANP: ¥{branch.anp}M</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-destructive">{branch.achievementRate}%</p>
+                          <p className="text-sm text-muted-foreground">目標未達</p>
+                        </div>
+                      </div>
+                    ))}
                 </div>
-              </div>
-            </TabsContent>
-          </div>
+              </CardContent>
+            </Card>
+
+            {/* 課題分析 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border border-border">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">主要課題</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-muted/30 rounded border border-border">
+                      <h5 className="font-semibold text-foreground mb-1">1. 地方支社の低迷</h5>
+                      <p className="text-sm text-muted-foreground">札幌、仙台支社の達成率が80%台で推移</p>
+                    </div>
+                    <div className="p-3 bg-muted/30 rounded border border-border">
+                      <h5 className="font-semibold text-foreground mb-1">2. 新規契約獲得の鈍化</h5>
+                      <p className="text-sm text-muted-foreground">前四半期比で訪問数が15%減少</p>
+                    </div>
+                    <div className="p-3 bg-muted/30 rounded border border-border">
+                      <h5 className="font-semibold text-foreground mb-1">3. 商品構成の偏り</h5>
+                      <p className="text-sm text-muted-foreground">医療保険への依存度が高く、リスク分散が必要</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-border">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">改善アクション</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-primary/10 rounded border border-primary/20">
+                      <h5 className="font-semibold text-foreground mb-1">短期施策（1-3ヶ月）</h5>
+                      <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                        <li>札幌・仙台支社への営業強化研修実施</li>
+                        <li>訪問数増加キャンペーンの展開</li>
+                      </ul>
+                    </div>
+                    <div className="p-3 bg-primary/10 rounded border border-primary/20">
+                      <h5 className="font-semibold text-foreground mb-1">中期施策（3-6ヶ月）</h5>
+                      <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                        <li>年金保険・がん保険の販売強化</li>
+                        <li>デジタルマーケティングの導入</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* 支社別課題サマリー */}
+            <Card className="border border-border">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">支社別課題サマリー</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {branchPerformanceData.map(branch => (
+                    <div key={branch.branchName} className="flex items-start gap-4 p-4 bg-muted/30 rounded border border-border">
+                      <div className="flex-1">
+                        <h5 className="font-semibold text-foreground">{branch.branchName}</h5>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {branch.achievementRate >= 100 
+                            ? "目標達成。引き続き高水準の維持を期待"
+                            : branch.achievementRate >= 90
+                            ? "目標達成まであと僅か。営業活動の強化が必要"
+                            : "目標未達。テコ入れが急務。営業戦略の見直しを推奨"}
+                        </p>
+                      </div>
+                      <div className={`px-3 py-1 rounded text-sm font-semibold ${
+                        branch.achievementRate >= 100
+                          ? "bg-success/20 text-success"
+                          : branch.achievementRate >= 90
+                          ? "bg-warning/20 text-warning"
+                          : "bg-destructive/20 text-destructive"
+                      }`}>
+                        {branch.achievementRate}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         <KPIDetailModal
