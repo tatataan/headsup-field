@@ -6,6 +6,9 @@ import { KPIDetailModal } from "@/components/dashboard/KPIDetailModal";
 import { ProductCompositionChart } from "@/components/dashboard/ProductCompositionChart";
 import { RegionalHeatmap } from "@/components/dashboard/RegionalHeatmap";
 import { AgencyRankingChart } from "@/components/dashboard/AgencyRankingChart";
+import { ActivityScatterChart } from "@/components/dashboard/ActivityScatterChart";
+import { PredictiveTrendChart } from "@/components/dashboard/PredictiveTrendChart";
+import { DashboardCustomizer, DashboardConfig } from "@/components/dashboard/DashboardCustomizer";
 import { PillButton } from "@/components/ui/pill-button";
 import { useState } from "react";
 
@@ -16,6 +19,17 @@ const Dashboard = () => {
     value: string;
     data: { month: string; value: number }[];
   } | null>(null);
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>({
+    showKPIs: true,
+    showMonthlyTrend: true,
+    showProductComposition: true,
+    showRegionalHeatmap: true,
+    showAgencyRanking: true,
+    showActivityScatter: true,
+    showPredictiveTrend: true,
+    showAIInsights: true,
+    showAgencyList: true,
+  });
 
   // サンプル月次データ
   const anpMonthlyData = [
@@ -73,12 +87,48 @@ const Dashboard = () => {
     { id: "10", name: "広島支社", anp: 19.6, achievement: 91 },
   ];
 
+  // サンプル活動量データ
+  const activityScatterData = [
+    { id: "1", name: "東京第一", visits: 245, anp: 45.2, achievement: 108 },
+    { id: "2", name: "大阪中央", visits: 198, anp: 38.7, achievement: 95 },
+    { id: "3", name: "名古屋支店", visits: 215, anp: 35.1, achievement: 102 },
+    { id: "4", name: "横浜営業所", visits: 189, anp: 32.8, achievement: 89 },
+    { id: "5", name: "福岡支社", visits: 167, anp: 28.5, achievement: 92 },
+    { id: "6", name: "札幌営業所", visits: 145, anp: 25.3, achievement: 78 },
+    { id: "7", name: "京都支店", visits: 156, anp: 23.9, achievement: 88 },
+    { id: "8", name: "神戸営業所", visits: 142, anp: 22.1, achievement: 85 },
+    { id: "9", name: "仙台支店", visits: 134, anp: 20.8, achievement: 82 },
+    { id: "10", name: "広島支社", visits: 128, anp: 19.6, achievement: 91 },
+  ];
+
+  // サンプル予測データ
+  const historicalTrendData = [
+    { month: "1月", value: 420, type: "actual" as const },
+    { month: "2月", value: 445, type: "actual" as const },
+    { month: "3月", value: 478, type: "actual" as const },
+    { month: "4月", value: 490, type: "actual" as const },
+    { month: "5月", value: 502, type: "actual" as const },
+    { month: "6月", value: 523.5, type: "actual" as const },
+  ];
+
+  const predictedTrendData = [
+    { month: "7月", value: 540, type: "predicted" as const },
+    { month: "8月", value: 558, type: "predicted" as const },
+    { month: "9月", value: 575, type: "predicted" as const },
+    { month: "10月", value: 590, type: "predicted" as const },
+    { month: "11月", value: 605, type: "predicted" as const },
+    { month: "12月", value: 620, type: "predicted" as const },
+  ];
+
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">ダッシュボード</h1>
-          <p className="text-muted-foreground">チャネル全体のパフォーマンスと課題を確認</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">ダッシュボード</h1>
+            <p className="text-muted-foreground">チャネル全体のパフォーマンスと課題を確認</p>
+          </div>
+          <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
         </div>
 
         <div className="flex gap-2 mb-8">
@@ -108,55 +158,82 @@ const Dashboard = () => {
           </PillButton>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <KPICard
-            title="全社ANP進捗"
-            value="¥523.5M"
-            change="+12.5% vs 前月"
-            changeType="positive"
-            onClick={() => handleKPIClick("全社ANP進捗", "¥523.5M", anpMonthlyData)}
-          />
-          <KPICard
-            title="保有契約高"
-            value="¥8.2B"
-            change="+5.2% vs 前月"
-            changeType="positive"
-            onClick={() => handleKPIClick("保有契約高", "¥8.2B", contractMonthlyData)}
-          />
-          <KPICard
-            title="活動代理店数"
-            value="47店"
-            change="前月と同じ"
-            changeType="neutral"
-          />
-          <KPICard
-            title="目標達成率"
-            value="89.2%"
-            change="-3.1% vs 前月"
-            changeType="negative"
-          />
-        </div>
+        {dashboardConfig.showKPIs && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <KPICard
+              title="全社ANP進捗"
+              value="¥523.5M"
+              change="+12.5% vs 前月"
+              changeType="positive"
+              onClick={() => handleKPIClick("全社ANP進捗", "¥523.5M", anpMonthlyData)}
+            />
+            <KPICard
+              title="保有契約高"
+              value="¥8.2B"
+              change="+5.2% vs 前月"
+              changeType="positive"
+              onClick={() => handleKPIClick("保有契約高", "¥8.2B", contractMonthlyData)}
+            />
+            <KPICard
+              title="活動代理店数"
+              value="47店"
+              change="前月と同じ"
+              changeType="neutral"
+            />
+            <KPICard
+              title="目標達成率"
+              value="89.2%"
+              change="-3.1% vs 前月"
+              changeType="negative"
+            />
+          </div>
+        )}
 
-        <div className="mb-8">
-          <MonthlyTrendChart
-            title="月次ANP推移"
-            data={anpMonthlyData}
-          />
-        </div>
+        {dashboardConfig.showMonthlyTrend && (
+          <div className="mb-8">
+            <MonthlyTrendChart
+              title="月次ANP推移"
+              data={anpMonthlyData}
+            />
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ProductCompositionChart data={productData} />
-          <RegionalHeatmap data={regionalData} />
-        </div>
+        {dashboardConfig.showPredictiveTrend && (
+          <div className="mb-8">
+            <PredictiveTrendChart
+              title="ANP予測トレンド"
+              historicalData={historicalTrendData}
+              predictedData={predictedTrendData}
+              targetValue={600}
+            />
+          </div>
+        )}
 
-        <div className="mb-8">
-          <AgencyRankingChart data={agencyRankingData} />
-        </div>
+        {(dashboardConfig.showProductComposition || dashboardConfig.showRegionalHeatmap) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {dashboardConfig.showProductComposition && <ProductCompositionChart data={productData} />}
+            {dashboardConfig.showRegionalHeatmap && <RegionalHeatmap data={regionalData} />}
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <AIInsightsCard />
-          <AgencyList />
-        </div>
+        {dashboardConfig.showAgencyRanking && (
+          <div className="mb-8">
+            <AgencyRankingChart data={agencyRankingData} />
+          </div>
+        )}
+
+        {dashboardConfig.showActivityScatter && (
+          <div className="mb-8">
+            <ActivityScatterChart data={activityScatterData} />
+          </div>
+        )}
+
+        {(dashboardConfig.showAIInsights || dashboardConfig.showAgencyList) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {dashboardConfig.showAIInsights && <AIInsightsCard />}
+            {dashboardConfig.showAgencyList && <AgencyList />}
+          </div>
+        )}
 
         <KPIDetailModal
           open={selectedKPI !== null}
