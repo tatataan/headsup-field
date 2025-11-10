@@ -37,6 +37,7 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
             data={enrichedData}
             layout="vertical"
             margin={{ top: 5, right: 80, left: 100, bottom: 5 }}
+            barCategoryGap="20%"
           >
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
@@ -81,7 +82,7 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
             {/* 背景範囲バー */}
             <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
             {/* 実績バー */}
-            <Bar dataKey="anp" fill="hsl(var(--primary))" name="ANP" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="anp" fill="hsl(var(--primary))" name="ANP" radius={[0, 4, 4, 0]} barSize={20} />
             {/* 目標値をラインマークで表示 */}
             <Scatter 
               dataKey="target" 

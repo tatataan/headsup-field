@@ -70,6 +70,7 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
             data={enrichedData}
             layout="vertical"
             margin={{ top: 5, right: 80, left: 100, bottom: 5 }}
+            barCategoryGap="20%"
           >
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
@@ -117,14 +118,13 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
                 );
               }}
             />
-            {/* 背景範囲バー */}
-            <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
             {/* 実績バー */}
             <Bar 
               dataKey="actualValue" 
               fill="hsl(var(--chart-2))" 
               name={viewMode === "count" ? "契約数" : "契約高"} 
-              radius={[0, 4, 4, 0]} 
+              radius={[0, 4, 4, 0]}
+              barSize={20}
             />
             {/* 目標値をラインマークで表示 */}
             <Scatter 
