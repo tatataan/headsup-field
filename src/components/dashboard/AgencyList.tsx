@@ -1,93 +1,200 @@
-import { Card } from "@/components/ui/card";
-import { Building2, TrendingUp, Info } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircleButton } from "@/components/ui/circle-button";
-import { BranchTrendModal } from "./BranchTrendModal";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TrendingUp } from "lucide-react";
 import { useState } from "react";
+import { BranchDetailModal } from "./branch-detail/BranchDetailModal";
+import { BranchDetailData } from "@/types/branch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Branch {
   id: string;
   name: string;
   area: string;
   status: string;
-  anp: string;
+  anp: number;
 }
 
 export const AgencyList = () => {
-  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
-  
+  const [selectedBranch, setSelectedBranch] = useState<BranchDetailData | null>(null);
+
   const branches: Branch[] = [
-    { id: "1", name: "東京支社", area: "関東エリア", status: "良好", anp: "¥185.5M" },
-    { id: "2", name: "大阪支社", area: "関西エリア", status: "注意", anp: "¥142.3M" },
-    { id: "3", name: "名古屋支社", area: "中部エリア", status: "良好", anp: "¥98.7M" },
-    { id: "4", name: "福岡支社", area: "九州エリア", status: "要対応", anp: "¥76.4M" },
-    { id: "5", name: "仙台支社", area: "東北エリア", status: "注意", anp: "¥54.2M" },
-    { id: "6", name: "札幌支社", area: "北海道エリア", status: "要対応", anp: "¥48.9M" },
+    { id: "1", name: "東京第一支社", area: "東京", status: "excellent", anp: 185.5 },
+    { id: "2", name: "大阪支社", area: "大阪", status: "good", anp: 156.2 },
+    { id: "3", name: "名古屋支社", area: "愛知", status: "attention", anp: 98.7 },
+    { id: "4", name: "福岡支社", area: "福岡", status: "good", anp: 145.3 },
+    { id: "5", name: "札幌支社", area: "北海道", status: "excellent", anp: 122.8 },
+    { id: "6", name: "仙台支社", area: "宮城", status: "attention", anp: 87.5 },
   ];
 
-  // サンプル月次データ（各支社用）
-  const getMonthlyData = (branchId: string) => {
-    const baseData = {
-      "1": [
-        { month: "1月", anp: 28.5, contractCount: 450 },
-        { month: "2月", anp: 29.8, contractCount: 465 },
-        { month: "3月", anp: 30.2, contractCount: 472 },
-        { month: "4月", anp: 30.5, contractCount: 478 },
-        { month: "5月", anp: 30.8, contractCount: 482 },
-        { month: "6月", anp: 31.2, contractCount: 485 },
-      ],
-      "2": [
-        { month: "1月", anp: 22.1, contractCount: 345 },
-        { month: "2月", anp: 22.8, contractCount: 352 },
-        { month: "3月", anp: 23.2, contractCount: 358 },
-        { month: "4月", anp: 23.5, contractCount: 362 },
-        { month: "5月", anp: 23.7, contractCount: 365 },
-        { month: "6月", anp: 23.9, contractCount: 368 },
-      ],
-      "3": [
-        { month: "1月", anp: 15.2, contractCount: 252 },
-        { month: "2月", anp: 15.8, contractCount: 258 },
-        { month: "3月", anp: 16.1, contractCount: 262 },
-        { month: "4月", anp: 16.3, contractCount: 265 },
-        { month: "5月", anp: 16.5, contractCount: 268 },
-        { month: "6月", anp: 16.8, contractCount: 270 },
-      ],
-      "4": [
-        { month: "1月", anp: 11.8, contractCount: 195 },
-        { month: "2月", anp: 12.2, contractCount: 200 },
-        { month: "3月", anp: 12.5, contractCount: 203 },
-        { month: "4月", anp: 12.7, contractCount: 206 },
-        { month: "5月", anp: 12.9, contractCount: 208 },
-        { month: "6月", anp: 13.1, contractCount: 210 },
-      ],
-      "5": [
-        { month: "1月", anp: 8.5, contractCount: 142 },
-        { month: "2月", anp: 8.8, contractCount: 145 },
-        { month: "3月", anp: 9.0, contractCount: 148 },
-        { month: "4月", anp: 9.1, contractCount: 150 },
-        { month: "5月", anp: 9.2, contractCount: 152 },
-        { month: "6月", anp: 9.4, contractCount: 153 },
-      ],
-      "6": [
-        { month: "1月", anp: 7.8, contractCount: 125 },
-        { month: "2月", anp: 8.0, contractCount: 128 },
-        { month: "3月", anp: 8.1, contractCount: 130 },
-        { month: "4月", anp: 8.2, contractCount: 131 },
-        { month: "5月", anp: 8.3, contractCount: 132 },
-        { month: "6月", anp: 8.4, contractCount: 133 },
+  const getBranchDetailData = (branchId: string): BranchDetailData => {
+    const branch = branches.find((b) => b.id === branchId)!;
+    
+    // KPIデータ
+    const kpi = {
+      currentANP: branch.anp,
+      targetANP: branch.anp / 1.08,
+      contractCount: Math.floor(branch.anp * 13.2),
+      prevContractCount: Math.floor(branch.anp * 12.8),
+      contractValue: Math.floor(branch.anp * 2.05),
+      prevContractValue: Math.floor(branch.anp * 2.0),
+      achievementRate: 108,
+      activeAgents: Math.floor(branch.anp / 4.5),
+      totalAgents: Math.floor(branch.anp / 4.1),
+    };
+
+    // 月次データ
+    const monthlyData = [
+      { month: "10月", anp: branch.anp * 0.85, contractCount: kpi.contractCount * 0.85 },
+      { month: "11月", anp: branch.anp * 0.88, contractCount: kpi.contractCount * 0.88 },
+      { month: "12月", anp: branch.anp * 0.91, contractCount: kpi.contractCount * 0.91 },
+      { month: "1月", anp: branch.anp * 0.94, contractCount: kpi.contractCount * 0.94 },
+      { month: "2月", anp: branch.anp * 0.97, contractCount: kpi.contractCount * 0.97 },
+      { month: "3月", anp: branch.anp, contractCount: kpi.contractCount },
+    ];
+
+    // エージェントデータ
+    const agents = Array.from({ length: 8 }, (_, i) => ({
+      id: `agent-${i + 1}`,
+      name: `エージェント ${String.fromCharCode(65 + i)}`,
+      anp: Number((branch.anp / 8 * (1 + (Math.random() - 0.5) * 0.4)).toFixed(1)),
+      contractCount: Math.floor(kpi.contractCount / 8 * (1 + (Math.random() - 0.5) * 0.4)),
+      achievementRate: Math.floor(90 + Math.random() * 25),
+      trend: monthlyData.map((m) => ({
+        month: m.month,
+        anp: Number((branch.anp / 8 * (1 + (Math.random() - 0.5) * 0.4) * (monthlyData.indexOf(m) + 1) / 6).toFixed(1)),
+      })),
+    })).sort((a, b) => b.achievementRate - a.achievementRate);
+
+    // 商品データ
+    const productMix = [
+      {
+        productName: "終身保険",
+        anp: Number((branch.anp * 0.35).toFixed(1)),
+        contractCount: Math.floor(kpi.contractCount * 0.30),
+        avgContractValue: Number((branch.anp * 0.35 / (kpi.contractCount * 0.30)).toFixed(2)),
+        previousMonthAnp: Number((branch.anp * 0.34).toFixed(1)),
+        trend: monthlyData.map((m) => ({
+          month: m.month,
+          anp: Number((m.anp * 0.35).toFixed(1)),
+          contractCount: Math.floor(m.contractCount * 0.30),
+        })),
+      },
+      {
+        productName: "医療保険",
+        anp: Number((branch.anp * 0.28).toFixed(1)),
+        contractCount: Math.floor(kpi.contractCount * 0.35),
+        avgContractValue: Number((branch.anp * 0.28 / (kpi.contractCount * 0.35)).toFixed(2)),
+        previousMonthAnp: Number((branch.anp * 0.27).toFixed(1)),
+        trend: monthlyData.map((m) => ({
+          month: m.month,
+          anp: Number((m.anp * 0.28).toFixed(1)),
+          contractCount: Math.floor(m.contractCount * 0.35),
+        })),
+      },
+      {
+        productName: "がん保険",
+        anp: Number((branch.anp * 0.18).toFixed(1)),
+        contractCount: Math.floor(kpi.contractCount * 0.15),
+        avgContractValue: Number((branch.anp * 0.18 / (kpi.contractCount * 0.15)).toFixed(2)),
+        previousMonthAnp: Number((branch.anp * 0.19).toFixed(1)),
+        trend: monthlyData.map((m) => ({
+          month: m.month,
+          anp: Number((m.anp * 0.18).toFixed(1)),
+          contractCount: Math.floor(m.contractCount * 0.15),
+        })),
+      },
+      {
+        productName: "年金保険",
+        anp: Number((branch.anp * 0.12).toFixed(1)),
+        contractCount: Math.floor(kpi.contractCount * 0.12),
+        avgContractValue: Number((branch.anp * 0.12 / (kpi.contractCount * 0.12)).toFixed(2)),
+        previousMonthAnp: Number((branch.anp * 0.13).toFixed(1)),
+        trend: monthlyData.map((m) => ({
+          month: m.month,
+          anp: Number((m.anp * 0.12).toFixed(1)),
+          contractCount: Math.floor(m.contractCount * 0.12),
+        })),
+      },
+      {
+        productName: "その他",
+        anp: Number((branch.anp * 0.07).toFixed(1)),
+        contractCount: Math.floor(kpi.contractCount * 0.08),
+        avgContractValue: Number((branch.anp * 0.07 / (kpi.contractCount * 0.08)).toFixed(2)),
+        previousMonthAnp: Number((branch.anp * 0.07).toFixed(1)),
+        trend: monthlyData.map((m) => ({
+          month: m.month,
+          anp: Number((m.anp * 0.07).toFixed(1)),
+          contractCount: Math.floor(m.contractCount * 0.08),
+        })),
+      },
+    ];
+
+    // 契約内訳データ
+    const contractBreakdown = {
+      newContracts: Math.floor(kpi.contractCount * 0.08),
+      prevNewContracts: Math.floor(kpi.contractCount * 0.075),
+      cancellations: Math.floor(kpi.contractCount * 0.045),
+      prevCancellations: Math.floor(kpi.contractCount * 0.05),
+      netIncrease: Math.floor(kpi.contractCount * 0.035),
+      prevNetIncrease: Math.floor(kpi.contractCount * 0.025),
+      cancellationRate: 4.5,
+      monthlyTrend: monthlyData.map((m, i) => ({
+        month: m.month,
+        new: Math.floor(m.contractCount * (0.07 + i * 0.002)),
+        cancel: Math.floor(m.contractCount * (0.05 - i * 0.001)),
+        net: Math.floor(m.contractCount * (0.02 + i * 0.003)),
+        cancelRate: Number((5.0 - i * 0.1).toFixed(1)),
+      })),
+      acquisitionChannels: [
+        { channel: "紹介", count: Math.floor(kpi.contractCount * 0.035), percentage: 43.8 },
+        { channel: "新規営業", count: Math.floor(kpi.contractCount * 0.025), percentage: 31.2 },
+        { channel: "キャンペーン", count: Math.floor(kpi.contractCount * 0.012), percentage: 15.0 },
+        { channel: "デジタル", count: Math.floor(kpi.contractCount * 0.006), percentage: 7.5 },
+        { channel: "その他", count: Math.floor(kpi.contractCount * 0.002), percentage: 2.5 },
       ],
     };
-    return baseData[branchId as keyof typeof baseData] || [];
+
+    // 顧客セグメントデータ
+    const customerSegments = {
+      ageSegments: [
+        { ageRange: "20代", contractCount: Math.floor(kpi.contractCount * 0.12), anp: Number((branch.anp * 0.10).toFixed(1)), percentage: 12.0 },
+        { ageRange: "30代", contractCount: Math.floor(kpi.contractCount * 0.28), anp: Number((branch.anp * 0.26).toFixed(1)), percentage: 28.0 },
+        { ageRange: "40代", contractCount: Math.floor(kpi.contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
+        { ageRange: "50代", contractCount: Math.floor(kpi.contractCount * 0.20), anp: Number((branch.anp * 0.22).toFixed(1)), percentage: 20.0 },
+        { ageRange: "60代以上", contractCount: Math.floor(kpi.contractCount * 0.08), anp: Number((branch.anp * 0.07).toFixed(1)), percentage: 8.0 },
+      ],
+      genderSegments: [
+        { gender: "男性", contractCount: Math.floor(kpi.contractCount * 0.58), anp: Number((branch.anp * 0.60).toFixed(1)), percentage: 58.0 },
+        { gender: "女性", contractCount: Math.floor(kpi.contractCount * 0.42), anp: Number((branch.anp * 0.40).toFixed(1)), percentage: 42.0 },
+      ],
+      contractDurationSegments: [
+        { duration: "新規1年未満", contractCount: Math.floor(kpi.contractCount * 0.15), anp: Number((branch.anp * 0.12).toFixed(1)), percentage: 15.0 },
+        { duration: "1-3年", contractCount: Math.floor(kpi.contractCount * 0.25), anp: Number((branch.anp * 0.23).toFixed(1)), percentage: 25.0 },
+        { duration: "3-5年", contractCount: Math.floor(kpi.contractCount * 0.28), anp: Number((branch.anp * 0.30).toFixed(1)), percentage: 28.0 },
+        { duration: "5年以上", contractCount: Math.floor(kpi.contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
+      ],
+    };
+
+    return {
+      branchId: branch.id,
+      branchName: branch.name,
+      kpi,
+      agents,
+      productMix,
+      contractBreakdown,
+      customerSegments,
+      monthlyData,
+    };
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "良好":
+      case "excellent":
         return "text-success";
-      case "注意":
+      case "good":
+        return "text-primary";
+      case "attention":
         return "text-warning";
-      case "要対応":
-        return "text-destructive";
       default:
         return "text-muted-foreground";
     }
@@ -95,90 +202,71 @@ export const AgencyList = () => {
 
   const getStatusDescription = (status: string) => {
     switch (status) {
-      case "良好":
-        return "達成率100%以上。目標を順調に達成しています。";
-      case "注意":
-        return "達成率90-99%。目標達成まであと僅かです。";
-      case "要対応":
-        return "達成率90%未満。早急な対応が必要です。";
+      case "excellent":
+        return "目標を大幅に達成";
+      case "good":
+        return "順調に推移";
+      case "attention":
+        return "要改善";
       default:
-        return "";
+        return "標準";
     }
   };
 
   return (
-    <Card className="glass-effect p-6 animate-slide-up">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-accent/20 rounded-lg">
-            <Building2 className="w-5 h-5 text-accent" />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground">支社一覧</h3>
-        </div>
-        <span className="text-sm text-muted-foreground px-3 py-1 bg-muted/50 rounded-full">
-          {branches.length}支社
-        </span>
-      </div>
-
-      {/* ステータス定義の説明 */}
-      <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
-        <div className="flex items-start gap-2">
-          <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><span className="text-success font-semibold">良好</span>: 達成率100%以上 | <span className="text-warning font-semibold">注意</span>: 達成率90-99% | <span className="text-destructive font-semibold">要対応</span>: 達成率90%未満</p>
-          </div>
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        {branches.map((branch, index) => (
-          <TooltipProvider key={branch.id}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-200 group cursor-pointer"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <div className="flex-1">
-                    <p className="font-medium text-foreground">
-                      {branch.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      <span className={getStatusColor(branch.status)}>
-                        ● {branch.status}
-                      </span>
-                      {" • "}{branch.area}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="text-base font-semibold text-foreground">{branch.anp}</p>
-                      <p className="text-xs text-muted-foreground">今月ANP</p>
-                    </div>
-                    <CircleButton 
-                      size="sm" 
-                      onClick={() => setSelectedBranch(branch)}
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                    </CircleButton>
-                  </div>
+    <Card className="glass-effect">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">支社別実績</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {branches.map((branch) => (
+            <div
+              key={branch.id}
+              className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-accent/50 transition-all duration-300 bg-card/50"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <h3 className="font-semibold text-foreground">{branch.name}</h3>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <span className={`text-xs font-medium ${getStatusColor(branch.status)}`}>
+                          ●
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getStatusDescription(branch.status)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent side="left" className="max-w-xs">
-                <p className="font-semibold mb-1">{branch.name}</p>
-                <p className="text-sm">{getStatusDescription(branch.status)}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ))}
-      </div>
+                <p className="text-sm text-muted-foreground mt-1">{branch.area}</p>
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-foreground">¥{branch.anp}M</p>
+                  <p className="text-xs text-muted-foreground">ANP</p>
+                </div>
+                <CircleButton
+                  onClick={() => setSelectedBranch(getBranchDetailData(branch.id))}
+                  className="hover:border-accent"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                </CircleButton>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
 
-      <BranchTrendModal
-        open={selectedBranch !== null}
-        onOpenChange={(open) => !open && setSelectedBranch(null)}
-        branchName={selectedBranch?.name || ""}
-        monthlyData={selectedBranch ? getMonthlyData(selectedBranch.id) : []}
-      />
+      {selectedBranch && (
+        <BranchDetailModal
+          open={!!selectedBranch}
+          onOpenChange={(open) => !open && setSelectedBranch(null)}
+          data={selectedBranch}
+        />
+      )}
     </Card>
   );
 };
