@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceArea } from "recharts";
+import { ComposedChart, Bar, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -23,12 +23,21 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
     viewMode === "count" ? b.contractCount - a.contractCount : b.contractValue - a.contractValue
   );
   
-  // 目標値の範囲を計算
-  const maxTarget = viewMode === "count" 
-    ? Math.max(...data.map(d => d.targetCount))
-    : Math.max(...data.map(d => d.targetValue));
-  const targetLower = maxTarget * 0.9;
-  const targetUpper = maxTarget * 1.1;
+  // 最大値を計算
+  const maxValue = viewMode === "count" 
+    ? Math.max(...data.map(d => Math.max(d.contractCount, d.targetCount)))
+    : Math.max(...data.map(d => Math.max(d.contractValue, d.targetValue)));
+  
+  // データに背景範囲と差分を追加
+  const enrichedData = sortedData.map(item => ({
+    ...item,
+    maxRange: maxValue * 1.1,
+    actualValue: viewMode === "count" ? item.contractCount : item.contractValue,
+    targetValue: viewMode === "count" ? item.targetCount : item.targetValue,
+    difference: viewMode === "count" 
+      ? item.contractCount - item.targetCount 
+      : item.contractValue - item.targetValue,
+  }));
 
   return (
     <Card className="border border-border">
@@ -58,9 +67,9 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
           <ComposedChart 
-            data={sortedData}
+            data={enrichedData}
             layout="vertical"
-            margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+            margin={{ top: 5, right: 80, left: 100, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
@@ -81,35 +90,45 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
                 if (viewMode === "count") {
                   if (name === "契約数") return [`${value.toLocaleString()}件`, name];
                   if (name === "目標") return [`${value.toLocaleString()}件`, name];
+                  if (name === "差分") return [`${value > 0 ? '+' : ''}${value.toLocaleString()}件`, name];
                 } else {
                   if (name === "契約高") return [`¥${value}M`, name];
                   if (name === "目標") return [`¥${value}M`, name];
+                  if (name === "差分") return [`¥${value > 0 ? '+' : ''}${value.toFixed(1)}M`, name];
                 }
                 return [value, name];
               }}
             />
             <Legend />
-            <ReferenceArea
-              x1={0}
-              x2={sortedData.length - 1}
-              y1={targetLower}
-              y2={targetUpper}
-              fill="hsl(var(--muted))"
-              fillOpacity={0.3}
-              label={{ value: "目標範囲", position: "insideTopRight", fill: "hsl(var(--muted-foreground))" }}
-            />
+            {/* 背景範囲バー */}
+            <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
+            {/* 実績バー */}
             <Bar 
-              dataKey={viewMode === "count" ? "contractCount" : "contractValue"} 
+              dataKey="actualValue" 
               fill="hsl(var(--chart-2))" 
               name={viewMode === "count" ? "契約数" : "契約高"} 
               radius={[0, 4, 4, 0]} 
             />
-            <Bar 
-              dataKey={viewMode === "count" ? "targetCount" : "targetValue"} 
+            {/* 目標値をラインマークで表示 */}
+            <Scatter 
+              dataKey="targetValue" 
               fill="hsl(var(--chart-3))" 
-              name="目標" 
-              radius={[0, 4, 4, 0]} 
-              fillOpacity={0.5}
+              name="目標"
+              shape={(props: any) => {
+                const { cx, cy } = props;
+                return (
+                  <g>
+                    <line 
+                      x1={cx} 
+                      y1={cy - 15} 
+                      x2={cx} 
+                      y2={cy + 15} 
+                      stroke="hsl(var(--chart-3))" 
+                      strokeWidth={3}
+                    />
+                  </g>
+                );
+              }}
             />
           </ComposedChart>
         </ResponsiveContainer>

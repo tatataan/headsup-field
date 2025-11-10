@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceArea } from "recharts";
+import { ComposedChart, Bar, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { TrendingUp } from "lucide-react";
 
 interface BranchPerformanceData {
   branchName: string;
@@ -15,10 +16,15 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
   // データをANPでソート
   const sortedData = [...data].sort((a, b) => b.anp - a.anp);
   
-  // 目標値の範囲を計算（目標の90%-110%）
-  const maxTarget = Math.max(...data.map(d => d.target));
-  const targetLower = maxTarget * 0.9;
-  const targetUpper = maxTarget * 1.1;
+  // 最大値を計算（グラフの範囲用）
+  const maxValue = Math.max(...data.map(d => Math.max(d.anp, d.target)));
+  
+  // データに背景範囲と差分を追加
+  const enrichedData = sortedData.map(item => ({
+    ...item,
+    maxRange: maxValue * 1.1,
+    difference: item.anp - item.target,
+  }));
 
   return (
     <Card className="border border-border">
@@ -28,9 +34,9 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
           <ComposedChart 
-            data={sortedData}
+            data={enrichedData}
             layout="vertical"
-            margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+            margin={{ top: 5, right: 80, left: 100, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
@@ -50,21 +56,36 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
               formatter={(value: number, name: string) => {
                 if (name === "ANP") return [`¥${value}M`, name];
                 if (name === "目標") return [`¥${value}M`, name];
+                if (name === "差分") return [`¥${value > 0 ? '+' : ''}${value.toFixed(1)}M`, name];
                 return [value, name];
               }}
             />
             <Legend />
-            <ReferenceArea
-              x1={0}
-              x2={sortedData.length - 1}
-              y1={targetLower}
-              y2={targetUpper}
-              fill="hsl(var(--muted))"
-              fillOpacity={0.3}
-              label={{ value: "目標範囲", position: "insideTopRight", fill: "hsl(var(--muted-foreground))" }}
-            />
+            {/* 背景範囲バー */}
+            <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
+            {/* 実績バー */}
             <Bar dataKey="anp" fill="hsl(var(--primary))" name="ANP" radius={[0, 4, 4, 0]} />
-            <Bar dataKey="target" fill="hsl(var(--chart-2))" name="目標" radius={[0, 4, 4, 0]} fillOpacity={0.5} />
+            {/* 目標値をラインマークで表示 */}
+            <Scatter 
+              dataKey="target" 
+              fill="hsl(var(--chart-3))" 
+              name="目標"
+              shape={(props: any) => {
+                const { cx, cy } = props;
+                return (
+                  <g>
+                    <line 
+                      x1={cx} 
+                      y1={cy - 15} 
+                      x2={cx} 
+                      y2={cy + 15} 
+                      stroke="hsl(var(--chart-3))" 
+                      strokeWidth={3}
+                    />
+                  </g>
+                );
+              }}
+            />
           </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
