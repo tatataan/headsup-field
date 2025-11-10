@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { Building2, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Building2, TrendingUp } from "lucide-react";
 import { CircleButton } from "@/components/ui/circle-button";
+import { BranchTrendModal } from "./BranchTrendModal";
+import { useState } from "react";
 
 interface Branch {
   id: string;
@@ -12,7 +13,7 @@ interface Branch {
 }
 
 export const AgencyList = () => {
-  const navigate = useNavigate();
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   
   const branches: Branch[] = [
     { id: "1", name: "東京支社", area: "関東エリア", status: "良好", anp: "¥185.5M" },
@@ -22,6 +23,61 @@ export const AgencyList = () => {
     { id: "5", name: "仙台支社", area: "東北エリア", status: "注意", anp: "¥54.2M" },
     { id: "6", name: "札幌支社", area: "北海道エリア", status: "要対応", anp: "¥48.9M" },
   ];
+
+  // サンプル月次データ（各支社用）
+  const getMonthlyData = (branchId: string) => {
+    const baseData = {
+      "1": [
+        { month: "1月", anp: 28.5, contractCount: 450 },
+        { month: "2月", anp: 29.8, contractCount: 465 },
+        { month: "3月", anp: 30.2, contractCount: 472 },
+        { month: "4月", anp: 30.5, contractCount: 478 },
+        { month: "5月", anp: 30.8, contractCount: 482 },
+        { month: "6月", anp: 31.2, contractCount: 485 },
+      ],
+      "2": [
+        { month: "1月", anp: 22.1, contractCount: 345 },
+        { month: "2月", anp: 22.8, contractCount: 352 },
+        { month: "3月", anp: 23.2, contractCount: 358 },
+        { month: "4月", anp: 23.5, contractCount: 362 },
+        { month: "5月", anp: 23.7, contractCount: 365 },
+        { month: "6月", anp: 23.9, contractCount: 368 },
+      ],
+      "3": [
+        { month: "1月", anp: 15.2, contractCount: 252 },
+        { month: "2月", anp: 15.8, contractCount: 258 },
+        { month: "3月", anp: 16.1, contractCount: 262 },
+        { month: "4月", anp: 16.3, contractCount: 265 },
+        { month: "5月", anp: 16.5, contractCount: 268 },
+        { month: "6月", anp: 16.8, contractCount: 270 },
+      ],
+      "4": [
+        { month: "1月", anp: 11.8, contractCount: 195 },
+        { month: "2月", anp: 12.2, contractCount: 200 },
+        { month: "3月", anp: 12.5, contractCount: 203 },
+        { month: "4月", anp: 12.7, contractCount: 206 },
+        { month: "5月", anp: 12.9, contractCount: 208 },
+        { month: "6月", anp: 13.1, contractCount: 210 },
+      ],
+      "5": [
+        { month: "1月", anp: 8.5, contractCount: 142 },
+        { month: "2月", anp: 8.8, contractCount: 145 },
+        { month: "3月", anp: 9.0, contractCount: 148 },
+        { month: "4月", anp: 9.1, contractCount: 150 },
+        { month: "5月", anp: 9.2, contractCount: 152 },
+        { month: "6月", anp: 9.4, contractCount: 153 },
+      ],
+      "6": [
+        { month: "1月", anp: 7.8, contractCount: 125 },
+        { month: "2月", anp: 8.0, contractCount: 128 },
+        { month: "3月", anp: 8.1, contractCount: 130 },
+        { month: "4月", anp: 8.2, contractCount: 131 },
+        { month: "5月", anp: 8.3, contractCount: 132 },
+        { month: "6月", anp: 8.4, contractCount: 133 },
+      ],
+    };
+    return baseData[branchId as keyof typeof baseData] || [];
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -54,12 +110,11 @@ export const AgencyList = () => {
         {branches.map((branch, index) => (
           <div
             key={branch.id}
-            className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 border border-transparent hover:border-accent/30 transition-all duration-300 group cursor-pointer"
-            onClick={() => navigate(`/agency/${branch.id}`)}
-            style={{ animationDelay: `${index * 0.1}s` }}
+            className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-200 group"
+            style={{ animationDelay: `${index * 0.05}s` }}
           >
             <div className="flex-1">
-              <p className="font-medium text-foreground group-hover:text-accent transition-colors">
+              <p className="font-medium text-foreground">
                 {branch.name}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -70,14 +125,24 @@ export const AgencyList = () => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-lg font-bold text-foreground">{branch.anp}</span>
-              <CircleButton size="sm" onClick={(e) => e.stopPropagation()}>
-                <ArrowRight className="w-4 h-4" />
+              <span className="text-base font-semibold text-foreground">{branch.anp}</span>
+              <CircleButton 
+                size="sm" 
+                onClick={() => setSelectedBranch(branch)}
+              >
+                <TrendingUp className="w-4 h-4" />
               </CircleButton>
             </div>
           </div>
         ))}
       </div>
+
+      <BranchTrendModal
+        open={selectedBranch !== null}
+        onOpenChange={(open) => !open && setSelectedBranch(null)}
+        branchName={selectedBranch?.name || ""}
+        monthlyData={selectedBranch ? getMonthlyData(selectedBranch.id) : []}
+      />
     </Card>
   );
 };
