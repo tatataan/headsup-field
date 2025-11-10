@@ -97,22 +97,22 @@ const Dashboard = () => {
 
   // 支社別パフォーマンスデータ
   const branchPerformanceData = [
-    { branchName: "東京支社", anp: 185.5, achievementRate: 108 },
-    { branchName: "大阪支社", anp: 142.3, achievementRate: 95 },
-    { branchName: "名古屋支社", anp: 98.7, achievementRate: 102 },
-    { branchName: "福岡支社", anp: 76.4, achievementRate: 89 },
-    { branchName: "仙台支社", anp: 54.2, achievementRate: 92 },
-    { branchName: "札幌支社", anp: 48.9, achievementRate: 78 },
+    { branchName: "東京支社", anp: 185.5, target: 171.8 },
+    { branchName: "大阪支社", anp: 142.3, target: 149.8 },
+    { branchName: "名古屋支社", anp: 98.7, target: 96.8 },
+    { branchName: "福岡支社", anp: 76.4, target: 85.8 },
+    { branchName: "仙台支社", anp: 54.2, target: 58.9 },
+    { branchName: "札幌支社", anp: 48.9, target: 62.7 },
   ];
 
   // 支社別保有契約数データ
   const branchContractData = [
-    { branchName: "東京支社", contractCount: 2850, achievementRate: 105 },
-    { branchName: "大阪支社", contractCount: 2150, achievementRate: 98 },
-    { branchName: "名古屋支社", contractCount: 1580, achievementRate: 103 },
-    { branchName: "福岡支社", contractCount: 1220, achievementRate: 92 },
-    { branchName: "仙台支社", contractCount: 890, achievementRate: 88 },
-    { branchName: "札幌支社", contractCount: 780, achievementRate: 85 },
+    { branchName: "東京支社", contractCount: 2850, contractValue: 185.5, targetCount: 2714, targetValue: 171.8 },
+    { branchName: "大阪支社", contractCount: 2150, contractValue: 142.3, targetCount: 2194, targetValue: 149.8 },
+    { branchName: "名古屋支社", contractCount: 1580, contractValue: 98.7, targetCount: 1534, targetValue: 96.8 },
+    { branchName: "福岡支社", contractCount: 1220, contractValue: 76.4, targetCount: 1326, targetValue: 85.8 },
+    { branchName: "仙台支社", contractCount: 890, contractValue: 54.2, targetCount: 1011, targetValue: 58.9 },
+    { branchName: "札幌支社", contractCount: 780, contractValue: 48.9, targetCount: 918, targetValue: 62.7 },
   ];
 
   // サンプル予測データ
@@ -242,20 +242,23 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {branchPerformanceData
-                    .filter(branch => branch.achievementRate < 90)
-                    .sort((a, b) => a.achievementRate - b.achievementRate)
-                    .map(branch => (
-                      <div key={branch.branchName} className="flex items-center justify-between p-4 bg-muted/50 rounded border border-border">
-                        <div>
-                          <h4 className="font-semibold text-foreground">{branch.branchName}</h4>
-                          <p className="text-sm text-muted-foreground">ANP: ¥{branch.anp}M</p>
+                    .filter(branch => (branch.anp / branch.target * 100) < 90)
+                    .sort((a, b) => (a.anp / a.target * 100) - (b.anp / b.target * 100))
+                    .map(branch => {
+                      const achievementRate = Math.round(branch.anp / branch.target * 100);
+                      return (
+                        <div key={branch.branchName} className="flex items-center justify-between p-4 bg-muted/50 rounded border border-border">
+                          <div>
+                            <h4 className="font-semibold text-foreground">{branch.branchName}</h4>
+                            <p className="text-sm text-muted-foreground">ANP: ¥{branch.anp}M / 目標: ¥{branch.target}M</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-destructive">{achievementRate}%</p>
+                            <p className="text-sm text-muted-foreground">目標未達</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-destructive">{branch.achievementRate}%</p>
-                          <p className="text-sm text-muted-foreground">目標未達</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               </CardContent>
             </Card>
@@ -316,29 +319,32 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {branchPerformanceData.map(branch => (
-                    <div key={branch.branchName} className="flex items-start gap-4 p-4 bg-muted/30 rounded border border-border">
-                      <div className="flex-1">
-                        <h5 className="font-semibold text-foreground">{branch.branchName}</h5>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {branch.achievementRate >= 100 
-                            ? "目標達成。引き続き高水準の維持を期待"
-                            : branch.achievementRate >= 90
-                            ? "目標達成まであと僅か。営業活動の強化が必要"
-                            : "目標未達。テコ入れが急務。営業戦略の見直しを推奨"}
-                        </p>
+                  {branchPerformanceData.map(branch => {
+                    const achievementRate = Math.round(branch.anp / branch.target * 100);
+                    return (
+                      <div key={branch.branchName} className="flex items-start gap-4 p-4 bg-muted/30 rounded border border-border">
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-foreground">{branch.branchName}</h5>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {achievementRate >= 100 
+                              ? "目標達成。引き続き高水準の維持を期待"
+                              : achievementRate >= 90
+                              ? "目標達成まであと僅か。営業活動の強化が必要"
+                              : "目標未達。テコ入れが急務。営業戦略の見直しを推奨"}
+                          </p>
+                        </div>
+                        <div className={`px-3 py-1 rounded text-sm font-semibold ${
+                          achievementRate >= 100
+                            ? "bg-success/20 text-success"
+                            : achievementRate >= 90
+                            ? "bg-warning/20 text-warning"
+                            : "bg-destructive/20 text-destructive"
+                        }`}>
+                          {achievementRate}%
+                        </div>
                       </div>
-                      <div className={`px-3 py-1 rounded text-sm font-semibold ${
-                        branch.achievementRate >= 100
-                          ? "bg-success/20 text-success"
-                          : branch.achievementRate >= 90
-                          ? "bg-warning/20 text-warning"
-                          : "bg-destructive/20 text-destructive"
-                      }`}>
-                        {branch.achievementRate}%
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
