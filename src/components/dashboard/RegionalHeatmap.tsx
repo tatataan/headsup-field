@@ -7,10 +7,11 @@ interface RegionData {
 }
 
 interface RegionalHeatmapProps {
+  title?: string;
   data: RegionData[];
 }
 
-export const RegionalHeatmap = ({ data }: RegionalHeatmapProps) => {
+export const RegionalHeatmap = ({ title = "地域別達成率", data }: RegionalHeatmapProps) => {
   const getColorClass = (achievement: number) => {
     if (achievement >= 100) return "bg-success/80 text-success-foreground";
     if (achievement >= 90) return "bg-chart-2/80 text-foreground";
@@ -28,7 +29,7 @@ export const RegionalHeatmap = ({ data }: RegionalHeatmapProps) => {
   return (
     <Card className="glass-effect hover:border-accent/50 transition-all duration-300">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">地域別達成率</CardTitle>
+        <CardTitle className="text-xl font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">

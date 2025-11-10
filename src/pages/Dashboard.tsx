@@ -59,14 +59,24 @@ const Dashboard = () => {
     { name: "その他", value: 28.5, color: "hsl(var(--chart-5))" },
   ];
 
-  // サンプル地域データ
-  const regionalData = [
+  // サンプル地域データ（ANP達成率）
+  const regionalAnpData = [
     { name: "関東", achievement: 105 },
     { name: "関西", achievement: 92 },
     { name: "中部", achievement: 88 },
     { name: "九州", achievement: 95 },
     { name: "東北", achievement: 78 },
     { name: "北海道", achievement: 85 },
+  ];
+
+  // サンプル地域データ（契約件数達成率）
+  const regionalContractData = [
+    { name: "関東", achievement: 98 },
+    { name: "関西", achievement: 88 },
+    { name: "中部", achievement: 94 },
+    { name: "九州", achievement: 102 },
+    { name: "東北", achievement: 85 },
+    { name: "北海道", achievement: 91 },
   ];
 
   // サンプル代理店ランキングデータ
@@ -127,12 +137,17 @@ const Dashboard = () => {
         return {
           anpValue: "¥523.5M",
           anpChange: "+12.5% vs 前月",
+          anpAchievement: "91.5%",
+          anpAchievementChange: "+2.3%",
           contractValue: "¥8.2B",
           contractChange: "+5.2% vs 前月",
+          contractAchievement: "94.2%",
+          contractAchievementChange: "+1.7%",
           anpMonthly: anpMonthlyData.slice(-1),
           contractMonthly: contractMonthlyData.slice(-1),
           productData: productData.map(p => ({ ...p, value: p.value / 6 })),
-          regionalData,
+          regionalAnpData,
+          regionalContractData,
           agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp / 6 })),
           activityScatter: activityScatterData.map(a => ({ ...a, visits: Math.round(a.visits / 6), anp: a.anp / 6 })),
           historicalTrend: historicalTrendData.slice(-1),
@@ -142,12 +157,17 @@ const Dashboard = () => {
         return {
           anpValue: "¥1,515.5M",
           anpChange: "+11.8% vs 前四半期",
+          anpAchievement: "88.7%",
+          anpAchievementChange: "-0.5%",
           contractValue: "¥8.2B",
           contractChange: "+3.9% vs 前四半期",
+          contractAchievement: "91.8%",
+          contractAchievementChange: "+0.8%",
           anpMonthly: anpMonthlyData.slice(-3),
           contractMonthly: contractMonthlyData.slice(-3),
           productData: productData.map(p => ({ ...p, value: p.value / 2 })),
-          regionalData,
+          regionalAnpData,
+          regionalContractData,
           agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp / 2 })),
           activityScatter: activityScatterData.map(a => ({ ...a, visits: Math.round(a.visits / 2), anp: a.anp / 2 })),
           historicalTrend: historicalTrendData.slice(-3),
@@ -157,12 +177,17 @@ const Dashboard = () => {
         return {
           anpValue: "¥6,620M",
           anpChange: "+15.2% vs 前年",
+          anpAchievement: "90.5%",
+          anpAchievementChange: "+1.3%",
           contractValue: "¥9.5B",
           contractChange: "+18.5% vs 前年",
+          contractAchievement: "93.0%",
+          contractAchievementChange: "+0.5%",
           anpMonthly: anpMonthlyData,
           contractMonthly: contractMonthlyData,
           productData: productData.map(p => ({ ...p, value: p.value * 2 })),
-          regionalData,
+          regionalAnpData,
+          regionalContractData,
           agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp * 2 })),
           activityScatter: activityScatterData.map(a => ({ ...a, visits: a.visits * 2, anp: a.anp * 2 })),
           historicalTrend: historicalTrendData,
@@ -172,19 +197,24 @@ const Dashboard = () => {
         return {
           anpValue: "¥523.5M",
           anpChange: "+12.5% vs 前月",
+          anpAchievement: "89.2%",
+          anpAchievementChange: "-3.1%",
           contractValue: "¥8.2B",
           contractChange: "+5.2% vs 前月",
+          contractAchievement: "92.5%",
+          contractAchievementChange: "+1.8%",
           anpMonthly: anpMonthlyData,
           contractMonthly: contractMonthlyData,
           productData,
-          regionalData,
+          regionalAnpData,
+          regionalContractData,
           agencyRanking: agencyRankingData,
           activityScatter: activityScatterData,
           historicalTrend: historicalTrendData,
           predictedTrend: predictedTrendData,
         };
     }
-  }, [activeFilter, anpMonthlyData, contractMonthlyData, productData, regionalData, agencyRankingData, activityScatterData, historicalTrendData, predictedTrendData]);
+  }, [activeFilter, anpMonthlyData, contractMonthlyData, productData, regionalAnpData, regionalContractData, agencyRankingData, activityScatterData, historicalTrendData, predictedTrendData]);
 
   return (
     <div className="flex-1 overflow-auto">
@@ -225,34 +255,47 @@ const Dashboard = () => {
         </div>
 
         {dashboardConfig.showKPIs && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <KPICard
-              title="全社ANP進捗"
-              value={filteredData.anpValue}
-              change={filteredData.anpChange}
-              changeType="positive"
-              onClick={() => handleKPIClick("全社ANP進捗", filteredData.anpValue, filteredData.anpMonthly)}
-            />
-            <KPICard
-              title="保有契約高"
-              value={filteredData.contractValue}
-              change={filteredData.contractChange}
-              changeType="positive"
-              onClick={() => handleKPIClick("保有契約高", filteredData.contractValue, filteredData.contractMonthly)}
-            />
-            <KPICard
-              title="活動代理店数"
-              value="47店"
-              change="前月と同じ"
-              changeType="neutral"
-            />
-            <KPICard
-              title="目標達成率"
-              value="89.2%"
-              change="-3.1% vs 前月"
-              changeType="negative"
-            />
-          </div>
+          <>
+            {/* 上段：主要指標3つ */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <KPICard
+                title="全社ANP進捗"
+                value={filteredData.anpValue}
+                change={filteredData.anpChange}
+                changeType="positive"
+                onClick={() => handleKPIClick("全社ANP進捗", filteredData.anpValue, filteredData.anpMonthly)}
+              />
+              <KPICard
+                title="保有契約高"
+                value={filteredData.contractValue}
+                change={filteredData.contractChange}
+                changeType="positive"
+                onClick={() => handleKPIClick("保有契約高", filteredData.contractValue, filteredData.contractMonthly)}
+              />
+              <KPICard
+                title="活動代理店数"
+                value="47店"
+                change="前月と同じ"
+                changeType="neutral"
+              />
+            </div>
+
+            {/* 下段：目標達成率2つ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <KPICard
+                title="ANP目標達成率"
+                value={filteredData.anpAchievement}
+                change={`${filteredData.anpAchievementChange} vs 前月`}
+                changeType={filteredData.anpAchievementChange.startsWith('-') ? 'negative' : 'positive'}
+              />
+              <KPICard
+                title="契約件数目標達成率"
+                value={filteredData.contractAchievement}
+                change={`${filteredData.contractAchievementChange} vs 前月`}
+                changeType={filteredData.contractAchievementChange.startsWith('-') ? 'negative' : 'positive'}
+              />
+            </div>
+          </>
         )}
 
         {dashboardConfig.showMonthlyTrend && (
@@ -275,10 +318,24 @@ const Dashboard = () => {
           </div>
         )}
 
-        {(dashboardConfig.showProductComposition || dashboardConfig.showRegionalHeatmap) && (
+        {/* 商品構成チャート */}
+        {dashboardConfig.showProductComposition && (
+          <div className="mb-8">
+            <ProductCompositionChart data={filteredData.productData} />
+          </div>
+        )}
+
+        {/* 地域ヒートマップ - ANPと契約件数を並列表示 */}
+        {dashboardConfig.showRegionalHeatmap && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {dashboardConfig.showProductComposition && <ProductCompositionChart data={filteredData.productData} />}
-            {dashboardConfig.showRegionalHeatmap && <RegionalHeatmap data={filteredData.regionalData} />}
+            <RegionalHeatmap 
+              title="地域別ANP達成率"
+              data={filteredData.regionalAnpData} 
+            />
+            <RegionalHeatmap 
+              title="地域別契約件数達成率"
+              data={filteredData.regionalContractData} 
+            />
           </div>
         )}
 
