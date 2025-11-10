@@ -8,12 +8,14 @@ import { RegionalHeatmap } from "@/components/dashboard/RegionalHeatmap";
 import { AgencyRankingChart } from "@/components/dashboard/AgencyRankingChart";
 import { ActivityScatterChart } from "@/components/dashboard/ActivityScatterChart";
 import { PredictiveTrendChart } from "@/components/dashboard/PredictiveTrendChart";
+import { BranchPerformanceChart } from "@/components/dashboard/BranchPerformanceChart";
+import { BranchContractChart } from "@/components/dashboard/BranchContractChart";
 import { DashboardCustomizer, DashboardConfig } from "@/components/dashboard/DashboardCustomizer";
 import { PillButton } from "@/components/ui/pill-button";
 import { useState, useMemo } from "react";
 
 const Dashboard = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("month");
   const [selectedKPI, setSelectedKPI] = useState<{
     title: string;
     value: string;
@@ -21,6 +23,7 @@ const Dashboard = () => {
   } | null>(null);
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>({
     showKPIs: true,
+    showBranchPerformance: true,
     showMonthlyTrend: true,
     showProductComposition: true,
     showRegionalHeatmap: true,
@@ -79,32 +82,44 @@ const Dashboard = () => {
     { name: "北海道", achievement: 91 },
   ];
 
-  // サンプル支店ランキングデータ（東京第一支社配下の支店）
+  // サンプル支社ランキングデータ
   const branchRankingData = [
-    { id: "1", name: "渋谷支店", anp: 45.2, achievement: 108 },
-    { id: "2", name: "新宿支店", anp: 38.7, achievement: 95 },
-    { id: "3", name: "池袋支店", anp: 35.1, achievement: 102 },
-    { id: "4", name: "品川支店", anp: 32.8, achievement: 89 },
-    { id: "5", name: "上野支店", anp: 28.5, achievement: 92 },
-    { id: "6", name: "立川支店", anp: 25.3, achievement: 78 },
-    { id: "7", name: "八王子支店", anp: 23.9, achievement: 88 },
-    { id: "8", name: "町田支店", anp: 22.1, achievement: 85 },
-    { id: "9", name: "吉祥寺支店", anp: 20.8, achievement: 82 },
-    { id: "10", name: "六本木支店", anp: 19.6, achievement: 91 },
+    { id: "1", branchName: "東京支社", anp: 185.5, achievement: 108 },
+    { id: "2", branchName: "大阪支社", anp: 142.3, achievement: 95 },
+    { id: "3", branchName: "名古屋支社", anp: 98.7, achievement: 102 },
+    { id: "4", branchName: "福岡支社", anp: 76.4, achievement: 89 },
+    { id: "5", branchName: "仙台支社", anp: 54.2, achievement: 92 },
+    { id: "6", branchName: "札幌支社", anp: 48.9, achievement: 78 },
   ];
 
-  // サンプル活動量データ（支店別）
+  // サンプル活動量データ（支社別）
   const branchActivityData = [
-    { id: "1", name: "渋谷支店", visits: 245, anp: 45.2, achievement: 108 },
-    { id: "2", name: "新宿支店", visits: 198, anp: 38.7, achievement: 95 },
-    { id: "3", name: "池袋支店", visits: 215, anp: 35.1, achievement: 102 },
-    { id: "4", name: "品川支店", visits: 189, anp: 32.8, achievement: 89 },
-    { id: "5", name: "上野支店", visits: 167, anp: 28.5, achievement: 92 },
-    { id: "6", name: "立川支店", visits: 145, anp: 25.3, achievement: 78 },
-    { id: "7", name: "八王子支店", visits: 156, anp: 23.9, achievement: 88 },
-    { id: "8", name: "町田支店", visits: 142, anp: 22.1, achievement: 85 },
-    { id: "9", name: "吉祥寺支店", visits: 134, anp: 20.8, achievement: 82 },
-    { id: "10", name: "六本木支店", visits: 128, anp: 19.6, achievement: 91 },
+    { id: "1", branchName: "東京支社", visits: 850, anp: 185.5, achievement: 108 },
+    { id: "2", branchName: "大阪支社", visits: 720, anp: 142.3, achievement: 95 },
+    { id: "3", branchName: "名古屋支社", visits: 580, anp: 98.7, achievement: 102 },
+    { id: "4", branchName: "福岡支社", visits: 490, anp: 76.4, achievement: 89 },
+    { id: "5", branchName: "仙台支社", visits: 420, anp: 54.2, achievement: 92 },
+    { id: "6", branchName: "札幌支社", visits: 380, anp: 48.9, achievement: 78 },
+  ];
+
+  // 支社別パフォーマンスデータ
+  const branchPerformanceData = [
+    { branchName: "東京支社", anp: 185.5, achievementRate: 108 },
+    { branchName: "大阪支社", anp: 142.3, achievementRate: 95 },
+    { branchName: "名古屋支社", anp: 98.7, achievementRate: 102 },
+    { branchName: "福岡支社", anp: 76.4, achievementRate: 89 },
+    { branchName: "仙台支社", anp: 54.2, achievementRate: 92 },
+    { branchName: "札幌支社", anp: 48.9, achievementRate: 78 },
+  ];
+
+  // 支社別保有契約数データ
+  const branchContractData = [
+    { branchName: "東京支社", contractCount: 2850, achievementRate: 105 },
+    { branchName: "大阪支社", contractCount: 2150, achievementRate: 98 },
+    { branchName: "名古屋支社", contractCount: 1580, achievementRate: 103 },
+    { branchName: "福岡支社", contractCount: 1220, achievementRate: 92 },
+    { branchName: "仙台支社", contractCount: 890, achievementRate: 88 },
+    { branchName: "札幌支社", contractCount: 780, achievementRate: 85 },
   ];
 
   // サンプル予測データ
@@ -135,11 +150,11 @@ const Dashboard = () => {
     switch (activeFilter) {
       case "month": // 今月のみ
         return {
-          anpValue: "¥523.5M",
+          anpValue: "¥606.0M",
           anpChange: "+12.5% vs 前月",
           anpAchievement: "91.5%",
           anpAchievementChange: "+2.3%",
-          contractValue: "¥8.2B",
+          contractValue: "¥9.5B",
           contractChange: "+5.2% vs 前月",
           contractAchievement: "94.2%",
           contractAchievementChange: "+1.7%",
@@ -148,18 +163,20 @@ const Dashboard = () => {
           productData: productData.map(p => ({ ...p, value: p.value / 6 })),
           regionalAnpData,
           regionalContractData,
-          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp / 6 })),
-          branchActivity: branchActivityData.map(a => ({ ...a, visits: Math.round(a.visits / 6), anp: a.anp / 6 })),
+          branchRanking: branchRankingData,
+          branchActivity: branchActivityData,
+          branchPerformance: branchPerformanceData,
+          branchContract: branchContractData,
           historicalTrend: historicalTrendData.slice(-1),
           predictedTrend: predictedTrendData.slice(0, 1),
         };
       case "quarter": // Q2（4-6月）
         return {
-          anpValue: "¥1,515.5M",
+          anpValue: "¥1,818.0M",
           anpChange: "+11.8% vs 前四半期",
           anpAchievement: "88.7%",
           anpAchievementChange: "-0.5%",
-          contractValue: "¥8.2B",
+          contractValue: "¥9.5B",
           contractChange: "+3.9% vs 前四半期",
           contractAchievement: "91.8%",
           contractAchievementChange: "+0.8%",
@@ -168,18 +185,20 @@ const Dashboard = () => {
           productData: productData.map(p => ({ ...p, value: p.value / 2 })),
           regionalAnpData,
           regionalContractData,
-          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp / 2 })),
-          branchActivity: branchActivityData.map(a => ({ ...a, visits: Math.round(a.visits / 2), anp: a.anp / 2 })),
+          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp * 3 })),
+          branchActivity: branchActivityData.map(a => ({ ...a, visits: a.visits * 3, anp: a.anp * 3 })),
+          branchPerformance: branchPerformanceData.map(b => ({ ...b, anp: b.anp * 3 })),
+          branchContract: branchContractData.map(b => ({ ...b, contractCount: b.contractCount * 3 })),
           historicalTrend: historicalTrendData.slice(-3),
           predictedTrend: predictedTrendData.slice(0, 3),
         };
       case "year": // 年間予測
         return {
-          anpValue: "¥6,620M",
+          anpValue: "¥7,272M",
           anpChange: "+15.2% vs 前年",
           anpAchievement: "90.5%",
           anpAchievementChange: "+1.3%",
-          contractValue: "¥9.5B",
+          contractValue: "¥11.4B",
           contractChange: "+18.5% vs 前年",
           contractAchievement: "93.0%",
           contractAchievementChange: "+0.5%",
@@ -188,18 +207,20 @@ const Dashboard = () => {
           productData: productData.map(p => ({ ...p, value: p.value * 2 })),
           regionalAnpData,
           regionalContractData,
-          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp * 2 })),
-          branchActivity: branchActivityData.map(a => ({ ...a, visits: a.visits * 2, anp: a.anp * 2 })),
+          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp * 12 })),
+          branchActivity: branchActivityData.map(a => ({ ...a, visits: a.visits * 12, anp: a.anp * 12 })),
+          branchPerformance: branchPerformanceData.map(b => ({ ...b, anp: b.anp * 12 })),
+          branchContract: branchContractData.map(b => ({ ...b, contractCount: b.contractCount * 12 })),
           historicalTrend: historicalTrendData,
           predictedTrend: predictedTrendData,
         };
       default: // 全体（6ヶ月累計）
         return {
-          anpValue: "¥523.5M",
+          anpValue: "¥3,636M",
           anpChange: "+12.5% vs 前月",
           anpAchievement: "89.2%",
           anpAchievementChange: "-3.1%",
-          contractValue: "¥8.2B",
+          contractValue: "¥9.5B",
           contractChange: "+5.2% vs 前月",
           contractAchievement: "92.5%",
           contractAchievementChange: "+1.8%",
@@ -208,13 +229,15 @@ const Dashboard = () => {
           productData,
           regionalAnpData,
           regionalContractData,
-          branchRanking: branchRankingData,
-          branchActivity: branchActivityData,
+          branchRanking: branchRankingData.map(a => ({ ...a, anp: a.anp * 6 })),
+          branchActivity: branchActivityData.map(a => ({ ...a, visits: a.visits * 6, anp: a.anp * 6 })),
+          branchPerformance: branchPerformanceData.map(b => ({ ...b, anp: b.anp * 6 })),
+          branchContract: branchContractData.map(b => ({ ...b, contractCount: b.contractCount * 6 })),
           historicalTrend: historicalTrendData,
           predictedTrend: predictedTrendData,
         };
     }
-  }, [activeFilter, anpMonthlyData, contractMonthlyData, productData, regionalAnpData, regionalContractData, branchRankingData, branchActivityData, historicalTrendData, predictedTrendData]);
+  }, [activeFilter, anpMonthlyData, contractMonthlyData, productData, regionalAnpData, regionalContractData, branchRankingData, branchActivityData, branchPerformanceData, branchContractData, historicalTrendData, predictedTrendData]);
 
   return (
     <div className="flex-1 overflow-auto">
@@ -273,8 +296,8 @@ const Dashboard = () => {
                 onClick={() => handleKPIClick("保有契約高", filteredData.contractValue, filteredData.contractMonthly)}
               />
               <KPICard
-                title="活動支店数"
-                value="10店"
+                title="活動支社数"
+                value="6支社"
                 change="前月と同じ"
                 changeType="neutral"
               />
@@ -296,6 +319,14 @@ const Dashboard = () => {
               />
             </div>
           </>
+        )}
+
+        {/* 支社別パフォーマンスチャート */}
+        {dashboardConfig.showBranchPerformance && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <BranchPerformanceChart data={filteredData.branchPerformance} />
+            <BranchContractChart data={filteredData.branchContract} />
+          </div>
         )}
 
         {dashboardConfig.showMonthlyTrend && (

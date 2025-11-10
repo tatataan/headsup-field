@@ -15,11 +15,12 @@ export const AgencyList = () => {
   const navigate = useNavigate();
   
   const branches: Branch[] = [
-    { id: "1", name: "渋谷支店", area: "関東エリア", status: "良好", anp: "¥45.2M" },
-    { id: "2", name: "新宿支店", area: "関東エリア", status: "良好", anp: "¥38.7M" },
-    { id: "3", name: "池袋支店", area: "関東エリア", status: "良好", anp: "¥35.1M" },
-    { id: "4", name: "品川支店", area: "関東エリア", status: "注意", anp: "¥32.8M" },
-    { id: "5", name: "上野支店", area: "関東エリア", status: "要対応", anp: "¥28.5M" },
+    { id: "1", name: "東京支社", area: "関東エリア", status: "良好", anp: "¥185.5M" },
+    { id: "2", name: "大阪支社", area: "関西エリア", status: "注意", anp: "¥142.3M" },
+    { id: "3", name: "名古屋支社", area: "中部エリア", status: "良好", anp: "¥98.7M" },
+    { id: "4", name: "福岡支社", area: "九州エリア", status: "要対応", anp: "¥76.4M" },
+    { id: "5", name: "仙台支社", area: "東北エリア", status: "注意", anp: "¥54.2M" },
+    { id: "6", name: "札幌支社", area: "北海道エリア", status: "要対応", anp: "¥48.9M" },
   ];
 
   const getStatusColor = (status: string) => {
@@ -42,10 +43,10 @@ export const AgencyList = () => {
           <div className="p-2 bg-accent/20 rounded-lg">
             <Building2 className="w-5 h-5 text-accent" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground">支店一覧</h3>
+          <h3 className="text-lg font-semibold text-foreground">支社一覧</h3>
         </div>
         <span className="text-sm text-muted-foreground px-3 py-1 bg-muted/50 rounded-full">
-          {branches.length}店舗
+          {branches.length}支社
         </span>
       </div>
       

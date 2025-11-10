@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 interface BranchActivityData {
   id: string;
-  name: string;
+  branchName: string;
   visits: number;
   anp: number;
   achievement: number;
@@ -34,7 +34,7 @@ export const ActivityScatterChart = ({ data }: ActivityScatterChartProps) => {
     <Card className="glass-effect hover:border-accent/50 transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          活動量 vs 成果分析
+          支社別活動量とANPの相関分析
           <span className="block text-sm text-muted-foreground font-normal mt-1">
             訪問回数とANPの相関関係
           </span>
@@ -81,13 +81,13 @@ export const ActivityScatterChart = ({ data }: ActivityScatterChartProps) => {
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
                   const data = payload[0].payload;
-                  return `${data.name} (達成率: ${data.achievement}%)`;
+                  return `${data.branchName} (達成率: ${data.achievement}%)`;
                 }
                 return '';
               }}
             />
             <Scatter 
-              name="支店" 
+              name="支社"
               data={data} 
               onClick={handleClick}
               className="cursor-pointer"

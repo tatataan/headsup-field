@@ -13,6 +13,7 @@ import { Settings2 } from "lucide-react";
 
 export interface DashboardConfig {
   showKPIs: boolean;
+  showBranchPerformance: boolean;
   showMonthlyTrend: boolean;
   showProductComposition: boolean;
   showRegionalHeatmap: boolean;

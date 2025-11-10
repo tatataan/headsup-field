@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 interface BranchRankingData {
   id: string;
-  name: string;
+  branchName: string;
   anp: number;
   achievement: number;
 }
@@ -32,7 +32,7 @@ export const AgencyRankingChart = ({ data }: AgencyRankingChartProps) => {
   return (
     <Card className="glass-effect hover:border-accent/50 transition-all duration-300">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">支店別ANPランキング (Top 10)</CardTitle>
+        <CardTitle className="text-xl font-semibold">支社別ANPランキング</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
@@ -48,7 +48,7 @@ export const AgencyRankingChart = ({ data }: AgencyRankingChartProps) => {
             />
             <YAxis 
               type="category" 
-              dataKey="name" 
+              dataKey="branchName"
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: 'hsl(var(--muted-foreground))' }}
               width={90}
