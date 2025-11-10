@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BarChartCustom } from "@/components/ui/bar-chart-custom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { BranchInsightCard } from "./BranchInsightCard";
 
 interface AgentRankingTableProps {
   agents: AgentPerformance[];
@@ -19,6 +20,10 @@ export const AgentRankingTable = ({ agents }: AgentRankingTableProps) => {
     const multiplier = sortOrder === "desc" ? -1 : 1;
     return (a[sortBy] - b[sortBy]) * multiplier;
   });
+  
+  const highPerformers = sortedAgents.filter(a => a.achievementRate >= 100).length;
+  const lowPerformers = sortedAgents.filter(a => a.achievementRate < 90).length;
+  const avgRate = sortedAgents.reduce((sum, a) => sum + a.achievementRate, 0) / sortedAgents.length;
 
   const handleSort = (key: typeof sortBy) => {
     if (sortBy === key) {
@@ -46,6 +51,23 @@ export const AgentRankingTable = ({ agents }: AgentRankingTableProps) => {
 
   return (
     <div className="space-y-4">
+      <BranchInsightCard
+        title="エージェントパフォーマンス分析"
+        insights={[
+          `支社全体の平均達成率は${avgRate.toFixed(1)}%で、${highPerformers}名が目標達成しています`,
+          `上位エージェントは月次ANPで下位の約${(sortedAgents[0]?.anp / sortedAgents[sortedAgents.length - 1]?.anp).toFixed(1)}倍の成果を出しています`,
+          lowPerformers > 0 
+            ? `${lowPerformers}名のエージェントが達成率90%未満で、育成支援が必要です`
+            : "全エージェントが安定したパフォーマンスを維持しています"
+        ]}
+        recommendation={
+          lowPerformers > 0
+            ? "低達成エージェントに対して、上位エージェントとのペアリング研修を実施し、営業手法の共有を推奨します"
+            : "現在の好調なパフォーマンスを維持するため、定期的な成功事例共有会を継続してください"
+        }
+        status={lowPerformers > 2 ? "warning" : avgRate >= 100 ? "positive" : "neutral"}
+      />
+      
       <Table>
         <TableHeader>
           <TableRow>

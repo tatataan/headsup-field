@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { ContractBreakdownData } from "@/types/branch";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { BranchInsightCard } from "./BranchInsightCard";
 
 interface ContractBreakdownAnalysisProps {
   breakdown: ContractBreakdownData;
@@ -11,6 +12,9 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
   const newChange = ((breakdown.newContracts - breakdown.prevNewContracts) / breakdown.prevNewContracts) * 100;
   const cancelChange = ((breakdown.cancellations - breakdown.prevCancellations) / breakdown.prevCancellations) * 100;
   const netChange = ((breakdown.netIncrease - breakdown.prevNetIncrease) / breakdown.prevNetIncrease) * 100;
+  
+  const avgCancellationRate = breakdown.monthlyTrend.reduce((sum, m) => sum + m.cancelRate, 0) / breakdown.monthlyTrend.length;
+  const topChannel = breakdown.acquisitionChannels.reduce((max, c) => c.count > max.count ? c : max);
 
   const summaryCards = [
     {
@@ -35,6 +39,23 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
 
   return (
     <div className="space-y-6">
+      <BranchInsightCard
+        title="契約動向分析"
+        insights={[
+          `今月の純増は${breakdown.netIncrease}件で、前月比${netChange >= 0 ? '+' : ''}${netChange.toFixed(1)}%です`,
+          `新規契約は${newChange >= 0 ? '増加' : '減少'}傾向（${newChange >= 0 ? '+' : ''}${newChange.toFixed(1)}%）にあり、${topChannel.channel}が${topChannel.percentage}%を占めています`,
+          `解約率は${avgCancellationRate.toFixed(1)}%で推移しており、${avgCancellationRate > 5 ? '業界平均を上回っています' : '良好な水準を維持しています'}`
+        ]}
+        recommendation={
+          avgCancellationRate > 5
+            ? "解約リスクの高い顧客を早期に特定し、フォローアップコールやアフターサービスの強化を実施してください"
+            : newChange < 0
+            ? `${topChannel.channel}チャネルの成功パターンを分析し、他チャネルへの横展開を推奨します`
+            : "現在の成長トレンドを維持するため、顧客満足度調査を実施し、強みをさらに強化してください"
+        }
+        status={avgCancellationRate > 7 ? "warning" : netChange > 0 && newChange > 10 ? "positive" : "neutral"}
+      />
+      
       {/* サマリーカード */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {summaryCards.map((card) => {

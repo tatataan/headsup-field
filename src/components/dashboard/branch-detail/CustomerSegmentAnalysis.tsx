@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { CustomerSegmentData } from "@/types/branch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BranchInsightCard } from "./BranchInsightCard";
 
 interface CustomerSegmentAnalysisProps {
   segments: CustomerSegmentData;
@@ -17,6 +18,10 @@ const COLORS = [
 export const CustomerSegmentAnalysis = ({ segments }: CustomerSegmentAnalysisProps) => {
   const totalContracts = segments.ageSegments.reduce((sum, s) => sum + s.contractCount, 0);
   const totalANP = segments.ageSegments.reduce((sum, s) => sum + s.anp, 0);
+  
+  const dominantAge = segments.ageSegments.reduce((max, seg) => seg.anp > max.anp ? seg : max);
+  const longTermCustomers = segments.contractDurationSegments.find(d => d.duration === "5年以上");
+  const maleSegment = segments.genderSegments.find(g => g.gender === "男性");
 
   const allSegments = [
     ...segments.ageSegments.map((s) => ({ ...s, type: "年齢層" })),
@@ -26,6 +31,27 @@ export const CustomerSegmentAnalysis = ({ segments }: CustomerSegmentAnalysisPro
 
   return (
     <div className="space-y-6">
+      <BranchInsightCard
+        title="顧客基盤分析"
+        insights={[
+          `${dominantAge.ageRange}が最大セグメントで、ANPの${dominantAge.percentage.toFixed(1)}%を占めています`,
+          `5年以上の長期顧客が${longTermCustomers ? longTermCustomers.percentage.toFixed(1) : '0'}%で、顧客ロイヤルティは${longTermCustomers && longTermCustomers.percentage > 30 ? '高い' : '改善の余地がある'}水準です`,
+          `男女比は${maleSegment ? maleSegment.percentage.toFixed(0) : '50'}:${maleSegment ? (100 - maleSegment.percentage).toFixed(0) : '50'}で、${Math.abs((maleSegment?.percentage || 50) - 50) > 20 ? '性別による偏りが見られます' : 'バランスが取れています'}`
+        ]}
+        recommendation={
+          dominantAge.percentage > 40
+            ? `${dominantAge.ageRange}以外の年齢層へのアプローチを強化し、顧客基盤の多様化を図ることを推奨します`
+            : longTermCustomers && longTermCustomers.percentage < 25
+            ? "顧客ロイヤルティプログラムの導入や定期的なフォローアップにより、長期顧客の育成を強化してください"
+            : "バランスの取れた顧客基盤を活かし、セグメント別のパーソナライズドサービスを展開してください"
+        }
+        status={
+          (longTermCustomers && longTermCustomers.percentage > 35) ? "positive" 
+          : dominantAge.percentage > 50 ? "warning" 
+          : "neutral"
+        }
+      />
+      
       {/* 年齢層別分析 */}
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-muted-foreground">年齢層別契約数分布</h3>

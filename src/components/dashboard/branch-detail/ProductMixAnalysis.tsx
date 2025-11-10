@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import { ProductTrendModal } from "./ProductTrendModal";
+import { BranchInsightCard } from "./BranchInsightCard";
 
 interface ProductMixAnalysisProps {
   products: ProductMixData[];
@@ -27,8 +28,30 @@ export const ProductMixAnalysis = ({ products }: ProductMixAnalysisProps) => {
     percentage: ((p.anp / totalANP) * 100).toFixed(1),
   }));
 
+  const topProduct = products.reduce((max, p) => p.anp > max.anp ? p : max);
+  const growthProducts = products.filter(p => p.anp > p.previousMonthAnp);
+  const concentrationRisk = (topProduct.anp / totalANP) * 100;
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="space-y-4">
+      <BranchInsightCard
+        title="商品ポートフォリオ分析"
+        insights={[
+          `${topProduct.productName}が全体の${concentrationRisk.toFixed(1)}%を占め、主力商品となっています`,
+          `${growthProducts.length}つの商品カテゴリで前月比プラス成長を記録しています`,
+          concentrationRisk > 50 
+            ? "特定商品への依存度が高く、ポートフォリオの多様化が必要です"
+            : "商品構成はバランスが取れており、リスク分散ができています"
+        ]}
+        recommendation={
+          concentrationRisk > 50
+            ? `成長性の高い${products.find(p => p.anp < p.previousMonthAnp * 1.1 && p.productName !== topProduct.productName)?.productName || "他商品"}の販売強化により、ポートフォリオの分散を図ることを推奨します`
+            : "現在のバランスを維持しつつ、各商品カテゴリでの深掘りを進めてください"
+        }
+        status={concentrationRisk > 60 ? "warning" : growthProducts.length >= 3 ? "positive" : "neutral"}
+      />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-muted-foreground">商品カテゴリ別ANP構成</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -109,6 +132,7 @@ export const ProductMixAnalysis = ({ products }: ProductMixAnalysisProps) => {
             })}
           </TableBody>
         </Table>
+      </div>
       </div>
 
       {selectedProduct && (
