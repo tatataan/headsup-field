@@ -6,15 +6,19 @@ interface KPICardProps {
   value: string;
   change: string;
   changeType: "positive" | "negative" | "neutral";
+  onClick?: () => void;
 }
 
-export const KPICard = ({ title, value, change, changeType }: KPICardProps) => {
+export const KPICard = ({ title, value, change, changeType, onClick }: KPICardProps) => {
   // Extract percentage from change string
   const percentageMatch = change.match(/([+-]?\d+\.?\d*)%/);
   const percentageValue = percentageMatch ? parseFloat(percentageMatch[1]) : 0;
 
   return (
-    <Card className="glass-effect p-6 hover:border-accent/50 transition-all duration-300 group">
+    <Card 
+      className="glass-effect p-6 hover:border-accent/50 transition-all duration-300 group cursor-pointer" 
+      onClick={onClick}
+    >
       <div className="space-y-3">
         <div className="flex items-start justify-between">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">{title}</p>
