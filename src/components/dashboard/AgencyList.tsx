@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { Building2, TrendingUp } from "lucide-react";
+import { Building2, TrendingUp, Info } from "lucide-react";
 import { CircleButton } from "@/components/ui/circle-button";
 import { BranchTrendModal } from "./BranchTrendModal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState } from "react";
 
 interface Branch {
@@ -92,6 +93,19 @@ export const AgencyList = () => {
     }
   };
 
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "良好":
+        return "達成率100%以上。目標を順調に達成しています。";
+      case "注意":
+        return "達成率90-99%。目標達成まであと僅かです。";
+      case "要対応":
+        return "達成率90%未満。早急な対応が必要です。";
+      default:
+        return "";
+    }
+  };
+
   return (
     <Card className="glass-effect p-6 animate-slide-up">
       <div className="flex items-center justify-between mb-6">
@@ -105,35 +119,57 @@ export const AgencyList = () => {
           {branches.length}支社
         </span>
       </div>
+
+      {/* ステータス定義の説明 */}
+      <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
+        <div className="flex items-start gap-2">
+          <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p><span className="text-success font-semibold">良好</span>: 達成率100%以上 | <span className="text-warning font-semibold">注意</span>: 達成率90-99% | <span className="text-destructive font-semibold">要対応</span>: 達成率90%未満</p>
+          </div>
+        </div>
+      </div>
       
       <div className="space-y-2">
         {branches.map((branch, index) => (
-          <div
-            key={branch.id}
-            className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-200 group"
-            style={{ animationDelay: `${index * 0.05}s` }}
-          >
-            <div className="flex-1">
-              <p className="font-medium text-foreground">
-                {branch.name}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                <span className={getStatusColor(branch.status)}>
-                  ● {branch.status}
-                </span>
-                {" • "}{branch.area}
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-base font-semibold text-foreground">{branch.anp}</span>
-              <CircleButton 
-                size="sm" 
-                onClick={() => setSelectedBranch(branch)}
-              >
-                <TrendingUp className="w-4 h-4" />
-              </CircleButton>
-            </div>
-          </div>
+          <TooltipProvider key={branch.id}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-200 group cursor-pointer"
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">
+                      {branch.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <span className={getStatusColor(branch.status)}>
+                        ● {branch.status}
+                      </span>
+                      {" • "}{branch.area}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="text-base font-semibold text-foreground">{branch.anp}</p>
+                      <p className="text-xs text-muted-foreground">今月ANP</p>
+                    </div>
+                    <CircleButton 
+                      size="sm" 
+                      onClick={() => setSelectedBranch(branch)}
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                    </CircleButton>
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-xs">
+                <p className="font-semibold mb-1">{branch.name}</p>
+                <p className="text-sm">{getStatusDescription(branch.status)}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ))}
       </div>
 

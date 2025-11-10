@@ -193,10 +193,10 @@ const Dashboard = () => {
                       onClick={() => handleKPIClick("保有契約高", currentData.contractValue, currentData.contractMonthly)}
                     />
                     <KPICard
-                      title="活動支社数"
-                      value="6支社"
-                      change="前月と同じ"
-                      changeType="neutral"
+                      title="保有契約数"
+                      value="8,470件"
+                      change="+3.8% vs 前月"
+                      changeType="positive"
                     />
                   </div>
 

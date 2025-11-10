@@ -99,7 +99,24 @@ export const BranchContractChart = ({ data }: BranchContractChartProps) => {
                 return [value, name];
               }}
             />
-            <Legend />
+            <Legend 
+              content={(props) => {
+                const { payload } = props;
+                return (
+                  <ul className="flex justify-center gap-6 mt-4">
+                    {payload?.filter((entry: any) => entry.dataKey !== 'maxRange').map((entry: any, index: number) => (
+                      <li key={`item-${index}`} className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-sm"
+                          style={{ backgroundColor: entry.color }}
+                        />
+                        <span className="text-sm text-muted-foreground">{entry.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }}
+            />
             {/* 背景範囲バー */}
             <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
             {/* 実績バー */}
