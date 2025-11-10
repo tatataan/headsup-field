@@ -3,6 +3,9 @@ import { AIInsightsCard } from "@/components/dashboard/AIInsightsCard";
 import { AgencyList } from "@/components/dashboard/AgencyList";
 import { MonthlyTrendChart } from "@/components/dashboard/MonthlyTrendChart";
 import { KPIDetailModal } from "@/components/dashboard/KPIDetailModal";
+import { ProductCompositionChart } from "@/components/dashboard/ProductCompositionChart";
+import { RegionalHeatmap } from "@/components/dashboard/RegionalHeatmap";
+import { AgencyRankingChart } from "@/components/dashboard/AgencyRankingChart";
 import { PillButton } from "@/components/ui/pill-button";
 import { useState } from "react";
 
@@ -36,6 +39,39 @@ const Dashboard = () => {
   const handleKPIClick = (title: string, value: string, data: { month: string; value: number }[]) => {
     setSelectedKPI({ title, value, data });
   };
+
+  // サンプル商品構成データ
+  const productData = [
+    { name: "終身保険", value: 180, color: "hsl(var(--chart-1))" },
+    { name: "医療保険", value: 150, color: "hsl(var(--chart-2))" },
+    { name: "がん保険", value: 95, color: "hsl(var(--chart-3))" },
+    { name: "年金保険", value: 70, color: "hsl(var(--chart-4))" },
+    { name: "その他", value: 28.5, color: "hsl(var(--chart-5))" },
+  ];
+
+  // サンプル地域データ
+  const regionalData = [
+    { name: "関東", achievement: 105 },
+    { name: "関西", achievement: 92 },
+    { name: "中部", achievement: 88 },
+    { name: "九州", achievement: 95 },
+    { name: "東北", achievement: 78 },
+    { name: "北海道", achievement: 85 },
+  ];
+
+  // サンプル代理店ランキングデータ
+  const agencyRankingData = [
+    { id: "1", name: "東京第一", anp: 45.2, achievement: 108 },
+    { id: "2", name: "大阪中央", anp: 38.7, achievement: 95 },
+    { id: "3", name: "名古屋支店", anp: 35.1, achievement: 102 },
+    { id: "4", name: "横浜営業所", anp: 32.8, achievement: 89 },
+    { id: "5", name: "福岡支社", anp: 28.5, achievement: 92 },
+    { id: "6", name: "札幌営業所", anp: 25.3, achievement: 78 },
+    { id: "7", name: "京都支店", anp: 23.9, achievement: 88 },
+    { id: "8", name: "神戸営業所", anp: 22.1, achievement: 85 },
+    { id: "9", name: "仙台支店", anp: 20.8, achievement: 82 },
+    { id: "10", name: "広島支社", anp: 19.6, achievement: 91 },
+  ];
 
   return (
     <div className="flex-1 overflow-auto">
@@ -106,6 +142,15 @@ const Dashboard = () => {
             title="月次ANP推移"
             data={anpMonthlyData}
           />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <ProductCompositionChart data={productData} />
+          <RegionalHeatmap data={regionalData} />
+        </div>
+
+        <div className="mb-8">
+          <AgencyRankingChart data={agencyRankingData} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
