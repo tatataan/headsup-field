@@ -50,6 +50,72 @@ const Dashboard = () => {
     { month: "6月", value: 8.2 },
   ];
 
+  // サンプル商品構成データ
+  const productData = [
+    { name: "終身保険", value: 180, color: "hsl(var(--chart-1))" },
+    { name: "医療保険", value: 150, color: "hsl(var(--chart-2))" },
+    { name: "がん保険", value: 95, color: "hsl(var(--chart-3))" },
+    { name: "年金保険", value: 70, color: "hsl(var(--chart-4))" },
+    { name: "その他", value: 28.5, color: "hsl(var(--chart-5))" },
+  ];
+
+  // サンプル地域データ
+  const regionalData = [
+    { name: "関東", achievement: 105 },
+    { name: "関西", achievement: 92 },
+    { name: "中部", achievement: 88 },
+    { name: "九州", achievement: 95 },
+    { name: "東北", achievement: 78 },
+    { name: "北海道", achievement: 85 },
+  ];
+
+  // サンプル代理店ランキングデータ
+  const agencyRankingData = [
+    { id: "1", name: "東京第一", anp: 45.2, achievement: 108 },
+    { id: "2", name: "大阪中央", anp: 38.7, achievement: 95 },
+    { id: "3", name: "名古屋支店", anp: 35.1, achievement: 102 },
+    { id: "4", name: "横浜営業所", anp: 32.8, achievement: 89 },
+    { id: "5", name: "福岡支社", anp: 28.5, achievement: 92 },
+    { id: "6", name: "札幌営業所", anp: 25.3, achievement: 78 },
+    { id: "7", name: "京都支店", anp: 23.9, achievement: 88 },
+    { id: "8", name: "神戸営業所", anp: 22.1, achievement: 85 },
+    { id: "9", name: "仙台支店", anp: 20.8, achievement: 82 },
+    { id: "10", name: "広島支社", anp: 19.6, achievement: 91 },
+  ];
+
+  // サンプル活動量データ
+  const activityScatterData = [
+    { id: "1", name: "東京第一", visits: 245, anp: 45.2, achievement: 108 },
+    { id: "2", name: "大阪中央", visits: 198, anp: 38.7, achievement: 95 },
+    { id: "3", name: "名古屋支店", visits: 215, anp: 35.1, achievement: 102 },
+    { id: "4", name: "横浜営業所", visits: 189, anp: 32.8, achievement: 89 },
+    { id: "5", name: "福岡支社", visits: 167, anp: 28.5, achievement: 92 },
+    { id: "6", name: "札幌営業所", visits: 145, anp: 25.3, achievement: 78 },
+    { id: "7", name: "京都支店", visits: 156, anp: 23.9, achievement: 88 },
+    { id: "8", name: "神戸営業所", visits: 142, anp: 22.1, achievement: 85 },
+    { id: "9", name: "仙台支店", visits: 134, anp: 20.8, achievement: 82 },
+    { id: "10", name: "広島支社", visits: 128, anp: 19.6, achievement: 91 },
+  ];
+
+  // サンプル予測データ
+  const historicalTrendData = [
+    { month: "1月", value: 420, type: "actual" as const },
+    { month: "2月", value: 445, type: "actual" as const },
+    { month: "3月", value: 478, type: "actual" as const },
+    { month: "4月", value: 490, type: "actual" as const },
+    { month: "5月", value: 502, type: "actual" as const },
+    { month: "6月", value: 523.5, type: "actual" as const },
+  ];
+
+  const predictedTrendData = [
+    { month: "7月", value: 540, type: "predicted" as const },
+    { month: "8月", value: 558, type: "predicted" as const },
+    { month: "9月", value: 575, type: "predicted" as const },
+    { month: "10月", value: 590, type: "predicted" as const },
+    { month: "11月", value: 605, type: "predicted" as const },
+    { month: "12月", value: 620, type: "predicted" as const },
+  ];
+
   const handleKPIClick = (title: string, value: string, data: { month: string; value: number }[]) => {
     setSelectedKPI({ title, value, data });
   };
@@ -118,73 +184,7 @@ const Dashboard = () => {
           predictedTrend: predictedTrendData,
         };
     }
-  }, [activeFilter]);
-
-  // サンプル商品構成データ
-  const productData = [
-    { name: "終身保険", value: 180, color: "hsl(var(--chart-1))" },
-    { name: "医療保険", value: 150, color: "hsl(var(--chart-2))" },
-    { name: "がん保険", value: 95, color: "hsl(var(--chart-3))" },
-    { name: "年金保険", value: 70, color: "hsl(var(--chart-4))" },
-    { name: "その他", value: 28.5, color: "hsl(var(--chart-5))" },
-  ];
-
-  // サンプル地域データ
-  const regionalData = [
-    { name: "関東", achievement: 105 },
-    { name: "関西", achievement: 92 },
-    { name: "中部", achievement: 88 },
-    { name: "九州", achievement: 95 },
-    { name: "東北", achievement: 78 },
-    { name: "北海道", achievement: 85 },
-  ];
-
-  // サンプル代理店ランキングデータ
-  const agencyRankingData = [
-    { id: "1", name: "東京第一", anp: 45.2, achievement: 108 },
-    { id: "2", name: "大阪中央", anp: 38.7, achievement: 95 },
-    { id: "3", name: "名古屋支店", anp: 35.1, achievement: 102 },
-    { id: "4", name: "横浜営業所", anp: 32.8, achievement: 89 },
-    { id: "5", name: "福岡支社", anp: 28.5, achievement: 92 },
-    { id: "6", name: "札幌営業所", anp: 25.3, achievement: 78 },
-    { id: "7", name: "京都支店", anp: 23.9, achievement: 88 },
-    { id: "8", name: "神戸営業所", anp: 22.1, achievement: 85 },
-    { id: "9", name: "仙台支店", anp: 20.8, achievement: 82 },
-    { id: "10", name: "広島支社", anp: 19.6, achievement: 91 },
-  ];
-
-  // サンプル活動量データ
-  const activityScatterData = [
-    { id: "1", name: "東京第一", visits: 245, anp: 45.2, achievement: 108 },
-    { id: "2", name: "大阪中央", visits: 198, anp: 38.7, achievement: 95 },
-    { id: "3", name: "名古屋支店", visits: 215, anp: 35.1, achievement: 102 },
-    { id: "4", name: "横浜営業所", visits: 189, anp: 32.8, achievement: 89 },
-    { id: "5", name: "福岡支社", visits: 167, anp: 28.5, achievement: 92 },
-    { id: "6", name: "札幌営業所", visits: 145, anp: 25.3, achievement: 78 },
-    { id: "7", name: "京都支店", visits: 156, anp: 23.9, achievement: 88 },
-    { id: "8", name: "神戸営業所", visits: 142, anp: 22.1, achievement: 85 },
-    { id: "9", name: "仙台支店", visits: 134, anp: 20.8, achievement: 82 },
-    { id: "10", name: "広島支社", visits: 128, anp: 19.6, achievement: 91 },
-  ];
-
-  // サンプル予測データ
-  const historicalTrendData = [
-    { month: "1月", value: 420, type: "actual" as const },
-    { month: "2月", value: 445, type: "actual" as const },
-    { month: "3月", value: 478, type: "actual" as const },
-    { month: "4月", value: 490, type: "actual" as const },
-    { month: "5月", value: 502, type: "actual" as const },
-    { month: "6月", value: 523.5, type: "actual" as const },
-  ];
-
-  const predictedTrendData = [
-    { month: "7月", value: 540, type: "predicted" as const },
-    { month: "8月", value: 558, type: "predicted" as const },
-    { month: "9月", value: 575, type: "predicted" as const },
-    { month: "10月", value: 590, type: "predicted" as const },
-    { month: "11月", value: 605, type: "predicted" as const },
-    { month: "12月", value: 620, type: "predicted" as const },
-  ];
+  }, [activeFilter, anpMonthlyData, contractMonthlyData, productData, regionalData, agencyRankingData, activityScatterData, historicalTrendData, predictedTrendData]);
 
   return (
     <div className="flex-1 overflow-auto">
