@@ -63,11 +63,15 @@ export const ActivityScatterChart = ({ data }: ActivityScatterChartProps) => {
             <ZAxis type="number" dataKey="achievement" range={[100, 1000]} />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
+              wrapperStyle={{ zIndex: 9999 }}
               contentStyle={{
                 backgroundColor: 'hsl(var(--popover))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: 'var(--radius)',
-                color: 'hsl(var(--popover-foreground))'
+                color: 'hsl(var(--popover-foreground))',
+                zIndex: 9999,
+                padding: '12px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
               }}
               formatter={(value: number, name: string) => {
                 if (name === '訪問回数') return [`${value}回`, name];

@@ -16,7 +16,7 @@ export const KPICard = ({ title, value, change, changeType, onClick }: KPICardPr
 
   return (
     <Card 
-      className="glass-effect p-6 hover:border-accent/50 transition-all duration-300 group cursor-pointer" 
+      className={`glass-effect p-6 hover:border-accent/50 transition-all duration-300 group ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
       onClick={onClick}
     >
       <div className="space-y-3">

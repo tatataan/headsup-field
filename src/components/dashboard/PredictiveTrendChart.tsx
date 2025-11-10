@@ -107,12 +107,12 @@ export const PredictiveTrendChart = ({
             <span>実績値</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-0.5 bg-chart-1 opacity-50" style={{ borderTop: '2px dashed' }}></div>
+            <div className="w-4 h-0.5 border-t-2 border-dashed border-chart-1"></div>
             <span>予測値</span>
           </div>
           {targetValue && (
             <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-chart-4" style={{ borderTop: '2px dashed' }}></div>
+              <div className="w-4 h-0.5 border-t-2 border-dashed border-chart-4"></div>
               <span>目標値</span>
             </div>
           )}

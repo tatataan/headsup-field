@@ -10,7 +10,7 @@ import { ActivityScatterChart } from "@/components/dashboard/ActivityScatterChar
 import { PredictiveTrendChart } from "@/components/dashboard/PredictiveTrendChart";
 import { DashboardCustomizer, DashboardConfig } from "@/components/dashboard/DashboardCustomizer";
 import { PillButton } from "@/components/ui/pill-button";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const Dashboard = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -53,6 +53,72 @@ const Dashboard = () => {
   const handleKPIClick = (title: string, value: string, data: { month: string; value: number }[]) => {
     setSelectedKPI({ title, value, data });
   };
+
+  // 期間フィルターに基づくデータ生成
+  const filteredData = useMemo(() => {
+    switch (activeFilter) {
+      case "month": // 今月のみ
+        return {
+          anpValue: "¥523.5M",
+          anpChange: "+12.5% vs 前月",
+          contractValue: "¥8.2B",
+          contractChange: "+5.2% vs 前月",
+          anpMonthly: anpMonthlyData.slice(-1),
+          contractMonthly: contractMonthlyData.slice(-1),
+          productData: productData.map(p => ({ ...p, value: p.value / 6 })),
+          regionalData,
+          agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp / 6 })),
+          activityScatter: activityScatterData.map(a => ({ ...a, visits: Math.round(a.visits / 6), anp: a.anp / 6 })),
+          historicalTrend: historicalTrendData.slice(-1),
+          predictedTrend: predictedTrendData.slice(0, 1),
+        };
+      case "quarter": // Q2（4-6月）
+        return {
+          anpValue: "¥1,515.5M",
+          anpChange: "+11.8% vs 前四半期",
+          contractValue: "¥8.2B",
+          contractChange: "+3.9% vs 前四半期",
+          anpMonthly: anpMonthlyData.slice(-3),
+          contractMonthly: contractMonthlyData.slice(-3),
+          productData: productData.map(p => ({ ...p, value: p.value / 2 })),
+          regionalData,
+          agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp / 2 })),
+          activityScatter: activityScatterData.map(a => ({ ...a, visits: Math.round(a.visits / 2), anp: a.anp / 2 })),
+          historicalTrend: historicalTrendData.slice(-3),
+          predictedTrend: predictedTrendData.slice(0, 3),
+        };
+      case "year": // 年間予測
+        return {
+          anpValue: "¥6,620M",
+          anpChange: "+15.2% vs 前年",
+          contractValue: "¥9.5B",
+          contractChange: "+18.5% vs 前年",
+          anpMonthly: anpMonthlyData,
+          contractMonthly: contractMonthlyData,
+          productData: productData.map(p => ({ ...p, value: p.value * 2 })),
+          regionalData,
+          agencyRanking: agencyRankingData.map(a => ({ ...a, anp: a.anp * 2 })),
+          activityScatter: activityScatterData.map(a => ({ ...a, visits: a.visits * 2, anp: a.anp * 2 })),
+          historicalTrend: historicalTrendData,
+          predictedTrend: predictedTrendData,
+        };
+      default: // 全体（6ヶ月累計）
+        return {
+          anpValue: "¥523.5M",
+          anpChange: "+12.5% vs 前月",
+          contractValue: "¥8.2B",
+          contractChange: "+5.2% vs 前月",
+          anpMonthly: anpMonthlyData,
+          contractMonthly: contractMonthlyData,
+          productData,
+          regionalData,
+          agencyRanking: agencyRankingData,
+          activityScatter: activityScatterData,
+          historicalTrend: historicalTrendData,
+          predictedTrend: predictedTrendData,
+        };
+    }
+  }, [activeFilter]);
 
   // サンプル商品構成データ
   const productData = [
@@ -162,17 +228,17 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <KPICard
               title="全社ANP進捗"
-              value="¥523.5M"
-              change="+12.5% vs 前月"
+              value={filteredData.anpValue}
+              change={filteredData.anpChange}
               changeType="positive"
-              onClick={() => handleKPIClick("全社ANP進捗", "¥523.5M", anpMonthlyData)}
+              onClick={() => handleKPIClick("全社ANP進捗", filteredData.anpValue, filteredData.anpMonthly)}
             />
             <KPICard
               title="保有契約高"
-              value="¥8.2B"
-              change="+5.2% vs 前月"
+              value={filteredData.contractValue}
+              change={filteredData.contractChange}
               changeType="positive"
-              onClick={() => handleKPIClick("保有契約高", "¥8.2B", contractMonthlyData)}
+              onClick={() => handleKPIClick("保有契約高", filteredData.contractValue, filteredData.contractMonthly)}
             />
             <KPICard
               title="活動代理店数"
@@ -193,7 +259,7 @@ const Dashboard = () => {
           <div className="mb-8">
             <MonthlyTrendChart
               title="月次ANP推移"
-              data={anpMonthlyData}
+              data={filteredData.anpMonthly}
             />
           </div>
         )}
@@ -202,8 +268,8 @@ const Dashboard = () => {
           <div className="mb-8">
             <PredictiveTrendChart
               title="ANP予測トレンド"
-              historicalData={historicalTrendData}
-              predictedData={predictedTrendData}
+              historicalData={filteredData.historicalTrend}
+              predictedData={filteredData.predictedTrend}
               targetValue={600}
             />
           </div>
@@ -211,20 +277,20 @@ const Dashboard = () => {
 
         {(dashboardConfig.showProductComposition || dashboardConfig.showRegionalHeatmap) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {dashboardConfig.showProductComposition && <ProductCompositionChart data={productData} />}
-            {dashboardConfig.showRegionalHeatmap && <RegionalHeatmap data={regionalData} />}
+            {dashboardConfig.showProductComposition && <ProductCompositionChart data={filteredData.productData} />}
+            {dashboardConfig.showRegionalHeatmap && <RegionalHeatmap data={filteredData.regionalData} />}
           </div>
         )}
 
         {dashboardConfig.showAgencyRanking && (
           <div className="mb-8">
-            <AgencyRankingChart data={agencyRankingData} />
+            <AgencyRankingChart data={filteredData.agencyRanking} />
           </div>
         )}
 
         {dashboardConfig.showActivityScatter && (
           <div className="mb-8">
-            <ActivityScatterChart data={activityScatterData} />
+            <ActivityScatterChart data={filteredData.activityScatter} />
           </div>
         )}
 
