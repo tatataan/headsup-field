@@ -79,8 +79,6 @@ export const BranchPerformanceChart = ({ data }: BranchPerformanceChartProps) =>
                 );
               }}
             />
-            {/* 背景範囲バー */}
-            <Bar dataKey="maxRange" fill="hsl(var(--muted))" fillOpacity={0.2} radius={[0, 4, 4, 0]} />
             {/* 実績バー */}
             <Bar dataKey="anp" fill="hsl(var(--primary))" name="ANP" radius={[0, 4, 4, 0]} barSize={20} />
             {/* 目標値をラインマークで表示 */}
