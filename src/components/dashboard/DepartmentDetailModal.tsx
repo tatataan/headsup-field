@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +13,9 @@ import { TrendingUp, TrendingDown, Building2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchBox } from "./SearchBox";
 import { PeriodSelector } from "./PeriodSelector";
-import { BranchDetailModal } from "./branch-detail/BranchDetailModal";
 import { BranchANPChart } from "./department-detail/BranchANPChart";
 import { BranchContractChart } from "./department-detail/BranchContractChart";
 import { BranchContinuationRateChart } from "./department-detail/BranchContinuationRateChart";
-import { generateBranchDetailData } from "@/data/sample-data-generator";
-import { getBranchById } from "@/data/branches";
 
 interface DepartmentDetailModalProps {
   open: boolean;
@@ -27,10 +25,10 @@ interface DepartmentDetailModalProps {
 }
 
 export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType: initialPeriodType }: DepartmentDetailModalProps) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "anp" | "contracts" | "continuation">("anp");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
   const [periodType, setPeriodType] = useState<PeriodType>(initialPeriodType);
 
   const filteredBranches = data.branches
@@ -71,18 +69,12 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType: in
   };
 
   const handleBranchClick = (branchId: string) => {
-    setSelectedBranchId(branchId);
+    onOpenChange(false);
+    navigate(`/branch/${branchId}`);
   };
 
-  const selectedBranchData = selectedBranchId ? (() => {
-    const branch = getBranchById(selectedBranchId);
-    if (!branch) return null;
-    return generateBranchDetailData(branch, periodType);
-  })() : null;
-
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-7xl max-h-[90vh]">
           <DialogHeader>
             <div className="flex items-center justify-between">
@@ -277,14 +269,5 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType: in
           </ScrollArea>
         </DialogContent>
       </Dialog>
-
-      {selectedBranchData && (
-        <BranchDetailModal
-          open={!!selectedBranchData}
-          onOpenChange={(open) => !open && setSelectedBranchId(null)}
-          data={selectedBranchData}
-        />
-      )}
-    </>
   );
 };

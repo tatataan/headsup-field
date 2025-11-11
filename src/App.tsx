@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { Sidebar } from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import AgencyDetail from "./pages/AgencyDetail";
+import BranchDetail from "./pages/BranchDetail";
 import TopicPost from "./pages/TopicPost";
 import MobileView from "./pages/MobileView";
 import NotFound from "./pages/NotFound";
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/agency/:id" element={<AgencyDetail />} />
+              <Route path="/branch/:id" element={<BranchDetail />} />
               <Route path="/topics/new" element={<TopicPost />} />
               <Route path="/mobile" element={<MobileView />} />
               <Route path="*" element={<NotFound />} />

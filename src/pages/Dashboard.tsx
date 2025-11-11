@@ -24,15 +24,8 @@ const Dashboard = () => {
   const [periodType, setPeriodType] = useState<PeriodType>('monthly');
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>({
     showKPIs: true,
-    showBranchPerformance: true,
-    showMonthlyTrend: true,
-    showProductComposition: true,
-    showRegionalHeatmap: true,
-    showAgencyRanking: true,
-    showActivityScatter: true,
-    showPredictiveTrend: true,
-    showAIInsights: true,
-    showAgencyList: true,
+    showDepartmentCharts: true,
+    showDepartmentList: true,
   });
 
   // 全社KPIデータを統括部から集計
@@ -135,12 +128,20 @@ const Dashboard = () => {
       <div className="p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-1">経営ダッシュボード</h1>
-            <p className="text-sm text-muted-foreground">{getPeriodLabel()}のパフォーマンス概要</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">経営ダッシュボード</h1>
+            <p className="text-sm text-muted-foreground">
+              {new Date().toLocaleDateString('ja-JP', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+              })} 現在
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">{getPeriodLabel()}のパフォーマンス概要</p>
           </div>
           <div className="flex items-center gap-4">
-            <PeriodSelector value={periodType} onChange={setPeriodType} />
             <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
+            <PeriodSelector value={periodType} onChange={setPeriodType} />
           </div>
         </div>
 
@@ -182,6 +183,22 @@ const Dashboard = () => {
                     />
                   </div>
 
+                  {/* 色分け凡例 */}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4 px-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-success"></div>
+                      <span>目標達成（100%以上）</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-warning"></div>
+                      <span>ほぼ達成（90-99%）</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-destructive"></div>
+                      <span>未達成（90%未満）</span>
+                    </div>
+                  </div>
+
                   {/* 達成率表示 */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <KPICard
@@ -207,7 +224,7 @@ const Dashboard = () => {
               )}
 
               {/* 統括部別グラフ */}
-              {dashboardConfig.showBranchPerformance && (
+              {dashboardConfig.showDepartmentCharts && (
                 <div className="space-y-6 mb-8">
                   <DepartmentANPChart 
                     data={departmentChartData.map(d => ({
@@ -233,7 +250,7 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {dashboardConfig.showAgencyList && (
+              {dashboardConfig.showDepartmentList && (
                 <div className="mb-8">
                   <DepartmentList periodType={periodType} />
                 </div>
