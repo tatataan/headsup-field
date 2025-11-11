@@ -14,6 +14,7 @@ import { useState, useMemo } from "react";
 import { departments } from "@/data/departments";
 import { getBranchesByDepartmentId } from "@/data/branches";
 import { generatePeriodData } from "@/data/sample-data-generator";
+import { AchievementLegend } from "@/components/ui/achievement-legend";
 
 const Dashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<{
@@ -140,6 +141,7 @@ const Dashboard = () => {
             <p className="text-sm text-muted-foreground mt-1">{getPeriodLabel()}のパフォーマンス概要</p>
           </div>
           <div className="flex items-center gap-4">
+            <AchievementLegend />
             <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
             <PeriodSelector value={periodType} onChange={setPeriodType} />
           </div>
@@ -163,40 +165,24 @@ const Dashboard = () => {
                     <KPICard
                       title={`全社新規ANP（${getPeriodLabel()}）`}
                       value={`¥${(companyKPI.newANP.actual / 1000000).toFixed(0)}M`}
-                      change={`計画: ¥${(companyKPI.newANP.plan / 1000000).toFixed(0)}M`}
-                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : "negative"}
+                      change=""
+                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : companyKPI.newANP.achievementRate >= 90 ? "neutral" : "negative"}
                       onClick={() => {}}
                     />
                     <KPICard
                       title={`全社新規契約数（${getPeriodLabel()}）`}
                       value={`${companyKPI.newContractCount.actual.toLocaleString()}件`}
-                      change={`計画: ${companyKPI.newContractCount.plan.toLocaleString()}件`}
-                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : "negative"}
+                      change=""
+                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : companyKPI.newContractCount.achievementRate >= 90 ? "neutral" : "negative"}
                       onClick={() => {}}
                     />
                     <KPICard
                       title={`全社継続率（${getPeriodLabel()}）`}
                       value={`${companyKPI.continuationRate.actual.toFixed(1)}%`}
-                      change={`計画: ${companyKPI.continuationRate.plan.toFixed(1)}%`}
-                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : "negative"}
+                      change=""
+                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : companyKPI.continuationRate.achievementRate >= 90 ? "neutral" : "negative"}
                       onClick={() => {}}
                     />
-                  </div>
-
-                  {/* 色分け凡例 */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4 px-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-success"></div>
-                      <span>目標達成（100%以上）</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-warning"></div>
-                      <span>ほぼ達成（90-99%）</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-destructive"></div>
-                      <span>未達成（90%未満）</span>
-                    </div>
                   </div>
 
                   {/* 達成率表示 */}
@@ -205,19 +191,22 @@ const Dashboard = () => {
                       title="新規ANP達成率"
                       value={`${companyKPI.newANP.achievementRate.toFixed(1)}%`}
                       change=""
-                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : "negative"}
+                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : companyKPI.newANP.achievementRate >= 90 ? "neutral" : "negative"}
+                      applyColorToValue={true}
                     />
                     <KPICard
                       title="新規契約数達成率"
                       value={`${companyKPI.newContractCount.achievementRate.toFixed(1)}%`}
                       change=""
-                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : "negative"}
+                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : companyKPI.newContractCount.achievementRate >= 90 ? "neutral" : "negative"}
+                      applyColorToValue={true}
                     />
                     <KPICard
                       title="継続率達成率"
                       value={`${companyKPI.continuationRate.achievementRate.toFixed(1)}%`}
                       change=""
-                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : "negative"}
+                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : companyKPI.continuationRate.achievementRate >= 90 ? "neutral" : "negative"}
+                      applyColorToValue={true}
                     />
                   </div>
                 </>

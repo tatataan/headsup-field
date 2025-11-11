@@ -14,6 +14,7 @@ import { ProductMixAnalysis } from '@/components/dashboard/branch-detail/Product
 import { ContractBreakdownAnalysis } from '@/components/dashboard/branch-detail/ContractBreakdownAnalysis';
 import { CustomerSegmentAnalysis } from '@/components/dashboard/branch-detail/CustomerSegmentAnalysis';
 import { BranchInsightCard } from '@/components/dashboard/branch-detail/BranchInsightCard';
+import { AchievementLegend } from '@/components/ui/achievement-legend';
 
 const BranchDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,6 +63,7 @@ const BranchDetail = () => {
               </p>
             )}
           </div>
+          <AchievementLegend />
           <PeriodSelector value={periodType} onChange={setPeriodType} />
         </div>
 

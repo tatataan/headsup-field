@@ -8,6 +8,7 @@ import { Sidebar } from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import AgencyDetail from "./pages/AgencyDetail";
 import BranchDetail from "./pages/BranchDetail";
+import DepartmentDetail from "./pages/DepartmentDetail";
 import TopicPost from "./pages/TopicPost";
 import MobileView from "./pages/MobileView";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/" element={<Dashboard />} />
               <Route path="/agency/:id" element={<AgencyDetail />} />
               <Route path="/branch/:id" element={<BranchDetail />} />
+              <Route path="/department/:id" element={<DepartmentDetail />} />
               <Route path="/topics/new" element={<TopicPost />} />
               <Route path="/mobile" element={<MobileView />} />
               <Route path="*" element={<NotFound />} />

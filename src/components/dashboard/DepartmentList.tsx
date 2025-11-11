@@ -2,12 +2,12 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, TrendingUp, TrendingDown } from "lucide-react";
 import { SearchBox } from "./SearchBox";
-import { Department, DepartmentDetailData } from "@/types/department";
+import { Department } from "@/types/department";
 import { departments } from "@/data/departments";
 import { branches, getBranchesByDepartmentId } from "@/data/branches";
 import { generatePeriodData } from "@/data/sample-data-generator";
 import { PeriodType } from "@/types/kpi";
-import { DepartmentDetailModal } from "./DepartmentDetailModal";
+import { useNavigate } from "react-router-dom";
 
 interface DepartmentListProps {
   periodType: PeriodType;
@@ -15,7 +15,7 @@ interface DepartmentListProps {
 
 export const DepartmentList = ({ periodType }: DepartmentListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState<DepartmentDetailData | null>(null);
+  const navigate = useNavigate();
 
   // 検索フィルタリング
   const filteredDepartments = useMemo(() => {
@@ -92,73 +92,7 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
   };
 
   const handleDepartmentClick = (dept: typeof departmentData[0]) => {
-    const deptBranches = getBranchesByDepartmentId(dept.id);
-    const currentPeriod = generatePeriodData(deptBranches[0], periodType, 0);
-    
-    // 履歴データ生成（簡易版）
-    const historicalData = Array.from({ length: 6 }, (_, i) => {
-      let totalANP = 0;
-      let totalContracts = 0;
-      let totalContinuation = 0;
-
-      deptBranches.forEach(branch => {
-        const periodData = generatePeriodData(branch, periodType, i);
-        totalANP += periodData.metrics.newANP.actual;
-        totalContracts += periodData.metrics.newContractCount.actual;
-        totalContinuation += periodData.metrics.continuationRate.actual;
-      });
-
-      return {
-        period: generatePeriodData(deptBranches[0], periodType, i).period,
-        newANP: totalANP,
-        newContractCount: totalContracts,
-        continuationRate: totalContinuation / deptBranches.length
-      };
-    }).reverse();
-
-    // 支社サマリー生成
-    const branchSummaries = deptBranches.map(branch => {
-      const branchPeriod = generatePeriodData(branch, periodType, 0);
-      return {
-        branchId: branch.id,
-        branchName: branch.name,
-        branchCode: branch.code,
-        newANP: branchPeriod.metrics.newANP,
-        newContractCount: branchPeriod.metrics.newContractCount,
-        continuationRate: branchPeriod.metrics.continuationRate.actual,
-        agentCount: branch.agentCount
-      };
-    });
-
-    setSelectedDepartment({
-      departmentId: dept.id,
-      departmentName: dept.name,
-      departmentCode: dept.code,
-      currentPeriod: {
-        period: currentPeriod.period,
-        periodType,
-        metrics: {
-          newANP: dept.metrics.newANP,
-          newContractCount: dept.metrics.newContractCount,
-          continuationRate: dept.metrics.continuationRate
-        }
-      },
-      historicalData: historicalData.map(h => ({
-        period: h.period,
-        periodType,
-        metrics: {
-          newANP: { plan: 0, actual: h.newANP, achievementRate: 0 },
-          newContractCount: { plan: 0, actual: h.newContractCount, achievementRate: 0 },
-          continuationRate: { plan: 95, actual: h.continuationRate, achievementRate: (h.continuationRate / 95) * 100 }
-        }
-      })),
-      branches: branchSummaries,
-      totalMetrics: {
-        newANP: dept.metrics.newANP,
-        newContractCount: dept.metrics.newContractCount,
-        continuationRate: dept.metrics.continuationRate
-      }
-    });
+    navigate(`/department/${dept.id}`);
   };
 
   return (
@@ -254,15 +188,6 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
           </div>
         )}
       </div>
-
-      {selectedDepartment && (
-        <DepartmentDetailModal
-          open={!!selectedDepartment}
-          onOpenChange={(open) => !open && setSelectedDepartment(null)}
-          data={selectedDepartment}
-          periodType={periodType}
-        />
-      )}
     </>
   );
 };
