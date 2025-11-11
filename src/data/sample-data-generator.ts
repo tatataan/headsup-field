@@ -64,8 +64,10 @@ export const generateMonthlyMetrics = (branch: Branch, monthOffset: number = 0):
   const anpAchievementRate = parseFloat(((actualNewANP / planNewANP) * 100).toFixed(1));
   const contractAchievementRate = parseFloat(((actualContractCount / planContractCount) * 100).toFixed(1));
   
-  // 継続率（93%-98%）
-  const continuationRate = randomFloat(93, 98, 1);
+  // 継続率（計画値と実績値）
+  const continuationRatePlan = randomFloat(95, 98, 1);
+  const continuationRateActual = randomFloat(93, 99, 1);
+  const continuationRateAchievement = parseFloat(((continuationRateActual / continuationRatePlan) * 100).toFixed(1));
   
   return {
     newANP: {
@@ -79,8 +81,9 @@ export const generateMonthlyMetrics = (branch: Branch, monthOffset: number = 0):
       achievementRate: contractAchievementRate
     },
     continuationRate: {
-      actual: continuationRate,
-      previousMonth: randomFloat(92, 97, 1)
+      plan: continuationRatePlan,
+      actual: continuationRateActual,
+      achievementRate: continuationRateAchievement
     }
   };
 };
@@ -100,7 +103,9 @@ export const generateQuarterlyMetrics = (branch: Branch, quarterOffset: number =
   const anpAchievementRate = parseFloat(((actualNewANP / planNewANP) * 100).toFixed(1));
   const contractAchievementRate = parseFloat(((actualContractCount / planContractCount) * 100).toFixed(1));
   
-  const continuationRate = randomFloat(94, 97, 1);
+  const continuationRatePlan = randomFloat(95, 98, 1);
+  const continuationRateActual = randomFloat(94, 99, 1);
+  const continuationRateAchievement = parseFloat(((continuationRateActual / continuationRatePlan) * 100).toFixed(1));
   
   return {
     newANP: {
@@ -114,8 +119,9 @@ export const generateQuarterlyMetrics = (branch: Branch, quarterOffset: number =
       achievementRate: contractAchievementRate
     },
     continuationRate: {
-      actual: continuationRate,
-      previousMonth: randomFloat(93, 96, 1)
+      plan: continuationRatePlan,
+      actual: continuationRateActual,
+      achievementRate: continuationRateAchievement
     }
   };
 };
@@ -135,7 +141,9 @@ export const generateYearlyMetrics = (branch: Branch, yearOffset: number = 0): K
   const anpAchievementRate = parseFloat(((actualNewANP / planNewANP) * 100).toFixed(1));
   const contractAchievementRate = parseFloat(((actualContractCount / planContractCount) * 100).toFixed(1));
   
-  const continuationRate = randomFloat(95, 97, 1);
+  const continuationRatePlan = randomFloat(95, 98, 1);
+  const continuationRateActual = randomFloat(95, 99, 1);
+  const continuationRateAchievement = parseFloat(((continuationRateActual / continuationRatePlan) * 100).toFixed(1));
   
   return {
     newANP: {
@@ -149,8 +157,9 @@ export const generateYearlyMetrics = (branch: Branch, yearOffset: number = 0): K
       achievementRate: contractAchievementRate
     },
     continuationRate: {
-      actual: continuationRate,
-      previousMonth: randomFloat(94, 96, 1)
+      plan: continuationRatePlan,
+      actual: continuationRateActual,
+      achievementRate: continuationRateAchievement
     }
   };
 };

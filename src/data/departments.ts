@@ -3,120 +3,68 @@ import { Department } from '@/types/department';
 export const departments: Department[] = [
   {
     id: 'dept-01',
-    code: 'HD',
-    name: '北海道営業部',
+    code: 'SM',
+    name: '首都圏統括部',
     type: 'sales',
-    region: '北海道',
-    branchIds: ['br-001', 'br-002', 'br-003', 'br-004', 'br-005', 'br-006']
+    region: '首都圏',
+    branchIds: [
+      'br-022', 'br-023', 'br-024', 'br-025', 'br-026', // さいたま総合、熊谷、川越、埼玉東部、所沢
+      'br-027', 'br-028', 'br-029', 'br-030', 'br-031', // 千葉総合、成田、船橋、柏常総、土浦
+      'br-032', 'br-033', // 上野総合、池袋総合
+      'br-034', 'br-035', 'br-036', 'br-037', 'br-038', 'br-039', // 渋谷総合、新宿総合、立川、八王子、都心総合、江東
+      'br-040', 'br-041', 'br-042', 'br-043', 'br-044' // 横浜総合、神奈川東部、町田、厚木、湘南
+    ]
   },
   {
     id: 'dept-02',
-    code: 'TH',
-    name: '東北営業部',
+    code: 'EM',
+    name: '東日本統括部',
     type: 'sales',
-    region: '東北',
-    branchIds: ['br-007', 'br-008', 'br-009', 'br-010', 'br-011', 'br-012']
+    region: '東日本',
+    branchIds: [
+      'br-001', 'br-002', 'br-003', 'br-004', 'br-005', 'br-006', // 帯広、旭川、札幌総合、道央、苫小牧、函館
+      'br-007', 'br-008', 'br-009', 'br-010', 'br-011', 'br-012', // 青森、盛岡、仙台総合、秋田、山形、福島
+      'br-013', 'br-014', 'br-015', 'br-016', 'br-017', 'br-018', // 水戸、栃木、群馬、太田、新潟、長岡
+      'br-019', 'br-020', 'br-021' // 甲府、長野、松本
+    ]
   },
   {
     id: 'dept-03',
-    code: 'KS',
-    name: '関信越営業部',
+    code: 'WM',
+    name: '西日本統括部',
     type: 'sales',
-    region: '関信越',
-    branchIds: ['br-013', 'br-014', 'br-015', 'br-016', 'br-017', 'br-018', 'br-019', 'br-020', 'br-021']
+    region: '西日本',
+    branchIds: [
+      'br-072', 'br-073', 'br-074', 'br-075', 'br-076', 'br-077', // 鳥取、島根、岡山、広島総合、福山、山口
+      'br-078', 'br-079', 'br-080', 'br-081', // 東四国、徳島、松山、高知
+      'br-082', 'br-083', 'br-084', 'br-085', 'br-086', 'br-087', // 北九州総合、北九州西、福岡総合、久留米、佐賀、長崎
+      'br-088', 'br-089', 'br-090', 'br-091', 'br-092', 'br-093' // 佐世保、熊本、大分、宮崎、鹿児島、那覇
+    ]
   },
   {
     id: 'dept-04',
-    code: 'SK1',
-    name: '首都圏第一営業部',
+    code: 'CM',
+    name: '中部統括部',
     type: 'sales',
-    region: '首都圏',
-    branchIds: ['br-022', 'br-023', 'br-024', 'br-025', 'br-026']
+    region: '中部',
+    branchIds: [
+      'br-045', 'br-046', 'br-047', // 沼津、静岡、浜松
+      'br-048', 'br-049', 'br-050', 'br-051', 'br-052', 'br-053', 'br-054', // 名古屋総合、名古屋西、中京総合、名古屋東、岡崎、豊橋、豊田
+      'br-055', 'br-056', 'br-057' // 富山、金沢、福井
+    ]
   },
   {
     id: 'dept-05',
-    code: 'SK2',
-    name: '首都圏第二営業部',
-    type: 'sales',
-    region: '首都圏',
-    branchIds: ['br-027', 'br-028', 'br-029', 'br-030', 'br-031', 'br-032', 'br-033']
-  },
-  {
-    id: 'dept-06',
-    code: 'SK3',
-    name: '首都圏第三営業部',
-    type: 'sales',
-    region: '首都圏',
-    branchIds: ['br-034', 'br-035', 'br-036', 'br-037', 'br-038', 'br-039', 'br-040', 'br-041', 'br-042', 'br-043', 'br-044']
-  },
-  {
-    id: 'dept-07',
-    code: 'TK',
-    name: '東海営業部',
-    type: 'sales',
-    region: '東海',
-    branchIds: ['br-045', 'br-046', 'br-047', 'br-048', 'br-049', 'br-050', 'br-051', 'br-052', 'br-053', 'br-054']
-  },
-  {
-    id: 'dept-08',
-    code: 'HR',
-    name: '北陸営業部',
-    type: 'sales',
-    region: '北陸',
-    branchIds: ['br-055', 'br-056', 'br-057']
-  },
-  {
-    id: 'dept-09',
-    code: 'KN',
-    name: '関西営業部',
+    code: 'KM',
+    name: '関西統括部',
     type: 'sales',
     region: '関西',
-    branchIds: ['br-058', 'br-059', 'br-060', 'br-061', 'br-062', 'br-063', 'br-064', 'br-065', 'br-066', 'br-067', 'br-068', 'br-069', 'br-070', 'br-071']
-  },
-  {
-    id: 'dept-10',
-    code: 'CG',
-    name: '中国営業部',
-    type: 'sales',
-    region: '中国',
-    branchIds: ['br-072', 'br-073', 'br-074', 'br-075', 'br-076', 'br-077']
-  },
-  {
-    id: 'dept-11',
-    code: 'SK',
-    name: '四国営業部',
-    type: 'sales',
-    region: '四国',
-    branchIds: ['br-078', 'br-079', 'br-080', 'br-081']
-  },
-  {
-    id: 'dept-12',
-    code: 'KS',
-    name: '九州営業部',
-    type: 'sales',
-    region: '九州',
-    branchIds: ['br-082', 'br-083', 'br-084', 'br-085', 'br-086', 'br-087', 'br-088', 'br-089', 'br-090', 'br-091', 'br-092', 'br-093']
-  },
-  {
-    id: 'dept-13',
-    code: 'CH1',
-    name: '法人営業部第一本部',
-    type: 'corporate',
-    branchIds: ['br-094', 'br-095', 'br-096']
-  },
-  {
-    id: 'dept-14',
-    code: 'CH2',
-    name: '法人営業部第二本部',
-    type: 'corporate',
-    branchIds: ['br-097', 'br-098', 'br-099']
-  },
-  {
-    id: 'dept-15',
-    code: 'KH',
-    name: '金融法人営業局',
-    type: 'financial',
-    branchIds: ['br-100', 'br-101']
+    branchIds: [
+      'br-070', 'br-071', // 岐阜、三重
+      'br-058', 'br-059', 'br-060', 'br-061', // 滋賀、京都総合、奈良、和歌山
+      'br-062', 'br-063', // 神戸総合、姫路
+      'br-064', 'br-065', 'br-066', 'br-067', 'br-068', 'br-069' // 堺、大阪東、大阪南、大阪北、茨木、布施
+    ]
   }
 ];
 

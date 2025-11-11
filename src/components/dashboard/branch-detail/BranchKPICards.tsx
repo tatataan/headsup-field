@@ -15,9 +15,7 @@ export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
 
   const anpChange = kpi.newANP.achievementRate - 100;
   const contractChange = kpi.newContractCount.achievementRate - 100;
-  const continuationChange = kpi.continuationRate.previousMonth 
-    ? kpi.continuationRate.actual - kpi.continuationRate.previousMonth 
-    : 0;
+  const continuationChange = kpi.continuationRate.achievementRate - 100;
 
   const kpiCards = [
     {
@@ -41,7 +39,7 @@ export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
       title: "継続率",
       value: `${kpi.continuationRate.actual}%`,
       change: continuationChange,
-      label: "対前月",
+      label: "達成率",
       dataKey: "contractCount",
     },
     {

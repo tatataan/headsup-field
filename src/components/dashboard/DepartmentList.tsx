@@ -27,7 +27,7 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
     );
   }, [searchQuery]);
 
-  // 営業部データの生成
+  // 統括部データの生成
   const departmentData = useMemo(() => {
     return filteredDepartments.map(dept => {
       const deptBranches = getBranchesByDepartmentId(dept.id);
@@ -37,7 +37,8 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
       let totalActualANP = 0;
       let totalPlanContracts = 0;
       let totalActualContracts = 0;
-      let avgContinuationRate = 0;
+      let totalContinuationRatePlan = 0;
+      let totalContinuationRateActual = 0;
 
       deptBranches.forEach(branch => {
         const periodData = generatePeriodData(branch, periodType, 0);
@@ -45,10 +46,13 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
         totalActualANP += periodData.metrics.newANP.actual;
         totalPlanContracts += periodData.metrics.newContractCount.plan;
         totalActualContracts += periodData.metrics.newContractCount.actual;
-        avgContinuationRate += periodData.metrics.continuationRate.actual;
+        totalContinuationRatePlan += periodData.metrics.continuationRate.plan;
+        totalContinuationRateActual += periodData.metrics.continuationRate.actual;
       });
 
-      avgContinuationRate = deptBranches.length > 0 ? avgContinuationRate / deptBranches.length : 0;
+      const avgContinuationRatePlan = deptBranches.length > 0 ? totalContinuationRatePlan / deptBranches.length : 0;
+      const avgContinuationRateActual = deptBranches.length > 0 ? totalContinuationRateActual / deptBranches.length : 0;
+      const continuationRateAchievement = avgContinuationRatePlan > 0 ? (avgContinuationRateActual / avgContinuationRatePlan) * 100 : 0;
 
       const anpAchievementRate = totalPlanANP > 0 ? (totalActualANP / totalPlanANP) * 100 : 0;
       const contractAchievementRate = totalPlanContracts > 0 ? (totalActualContracts / totalPlanContracts) * 100 : 0;
@@ -66,7 +70,11 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
             actual: totalActualContracts,
             achievementRate: parseFloat(contractAchievementRate.toFixed(1))
           },
-          continuationRate: parseFloat(avgContinuationRate.toFixed(1))
+          continuationRate: {
+            plan: parseFloat(avgContinuationRatePlan.toFixed(1)),
+            actual: parseFloat(avgContinuationRateActual.toFixed(1)),
+            achievementRate: parseFloat(continuationRateAchievement.toFixed(1))
+          }
         },
         branchCount: deptBranches.length
       };
@@ -132,9 +140,7 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
         metrics: {
           newANP: dept.metrics.newANP,
           newContractCount: dept.metrics.newContractCount,
-          continuationRate: {
-            actual: dept.metrics.continuationRate
-          }
+          continuationRate: dept.metrics.continuationRate
         }
       },
       historicalData: historicalData.map(h => ({
@@ -143,16 +149,14 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
         metrics: {
           newANP: { plan: 0, actual: h.newANP, achievementRate: 0 },
           newContractCount: { plan: 0, actual: h.newContractCount, achievementRate: 0 },
-          continuationRate: { actual: h.continuationRate }
+          continuationRate: { plan: 95, actual: h.continuationRate, achievementRate: (h.continuationRate / 95) * 100 }
         }
       })),
       branches: branchSummaries,
       totalMetrics: {
         newANP: dept.metrics.newANP,
         newContractCount: dept.metrics.newContractCount,
-        continuationRate: {
-          actual: dept.metrics.continuationRate
-        }
+        continuationRate: dept.metrics.continuationRate
       }
     });
   };
@@ -222,13 +226,21 @@ export const DepartmentList = ({ periodType }: DepartmentListProps) => {
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>継続率</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{dept.metrics.continuationRate}%</span>
-                    {dept.metrics.continuationRate >= 95 ? (
-                      <TrendingUp className="w-4 h-4 text-success" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-warning" />
-                    )}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold">{dept.metrics.continuationRate.actual}%</span>
+                      <span className="text-xs text-muted-foreground">/ {dept.metrics.continuationRate.plan}%</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className={`text-xs ${getAchievementColor(dept.metrics.continuationRate.achievementRate)}`}>
+                        達成率: {dept.metrics.continuationRate.achievementRate}%
+                      </span>
+                      {dept.metrics.continuationRate.achievementRate >= 100 ? (
+                        <TrendingUp className="w-3 h-3 text-success" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3 text-warning" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>

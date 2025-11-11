@@ -12,8 +12,9 @@ export interface KPIMetrics {
     achievementRate: number;
   };
   continuationRate: {
+    plan: number;
     actual: number;
-    previousMonth?: number;
+    achievementRate: number;
   };
 }
 

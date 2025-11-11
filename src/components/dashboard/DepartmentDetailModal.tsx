@@ -166,18 +166,16 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType }: 
                       <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
                           <span className="text-2xl font-bold">{data.totalMetrics.continuationRate.actual}%</span>
+                          <span className="text-sm text-muted-foreground">/ {data.totalMetrics.continuationRate.plan}%</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {data.totalMetrics.continuationRate.actual >= 95 ? (
-                            <>
-                              <span className="text-sm font-semibold text-success">優良</span>
-                              <TrendingUp className="w-4 h-4 text-success" />
-                            </>
+                          <span className={`text-sm font-semibold ${data.totalMetrics.continuationRate.achievementRate >= 100 ? 'text-success' : 'text-warning'}`}>
+                            達成率 {data.totalMetrics.continuationRate.achievementRate}%
+                          </span>
+                          {data.totalMetrics.continuationRate.achievementRate >= 100 ? (
+                            <TrendingUp className="w-4 h-4 text-success" />
                           ) : (
-                            <>
-                              <span className="text-sm font-semibold text-warning">要改善</span>
-                              <TrendingDown className="w-4 h-4 text-warning" />
-                            </>
+                            <TrendingDown className="w-4 h-4 text-warning" />
                           )}
                         </div>
                       </div>

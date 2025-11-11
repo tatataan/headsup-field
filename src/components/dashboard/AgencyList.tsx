@@ -42,8 +42,9 @@ export const AgencyList = () => {
         achievementRate: 103,
       },
       continuationRate: {
+        plan: 95.0,
         actual: 96.5,
-        previousMonth: 96.2,
+        achievementRate: 101.6,
       },
       activeAgents: Math.floor(branch.anp / 4.5),
       totalAgents: Math.floor(branch.anp / 4.1),

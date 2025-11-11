@@ -10,8 +10,9 @@ export interface BranchKPI {
     achievementRate: number;
   };
   continuationRate: {
+    plan: number;
     actual: number;
-    previousMonth?: number;
+    achievementRate: number;
   };
   activeAgents: number;
   totalAgents: number;
