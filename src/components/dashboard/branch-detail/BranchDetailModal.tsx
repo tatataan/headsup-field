@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -5,11 +6,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BranchDetailData } from "@/types/branch";
+import { PeriodType } from "@/types/kpi";
 import { BranchKPICards } from "./BranchKPICards";
 import { AgentRankingTable } from "./AgentRankingTable";
 import { ProductMixAnalysis } from "./ProductMixAnalysis";
 import { ContractBreakdownAnalysis } from "./ContractBreakdownAnalysis";
 import { CustomerSegmentAnalysis } from "./CustomerSegmentAnalysis";
+import { PeriodSelector } from "@/components/dashboard/PeriodSelector";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -20,11 +23,15 @@ interface BranchDetailModalProps {
 }
 
 export const BranchDetailModal = ({ open, onOpenChange, data }: BranchDetailModalProps) => {
+  const [periodType, setPeriodType] = useState<PeriodType>('monthly');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">{data.branchName} - 詳細分析</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-2xl font-semibold">{data.branchName} - 詳細分析</DialogTitle>
+            <PeriodSelector value={periodType} onChange={setPeriodType} />
+          </div>
         </DialogHeader>
         <ScrollArea className="h-[calc(90vh-100px)] pr-4">
           <div className="space-y-6">

@@ -241,84 +241,55 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* 課題分析 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="border border-border">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">主要課題</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="p-3 bg-muted/30 rounded border border-border">
-                      <h5 className="font-semibold text-foreground mb-1">1. 地方支社の低迷</h5>
-                      <p className="text-sm text-muted-foreground">札幌、仙台支社の達成率が80%台で推移</p>
-                    </div>
-                    <div className="p-3 bg-muted/30 rounded border border-border">
-                      <h5 className="font-semibold text-foreground mb-1">2. 新規契約獲得の鈍化</h5>
-                      <p className="text-sm text-muted-foreground">前四半期比で訪問数が15%減少</p>
-                    </div>
-                    <div className="p-3 bg-muted/30 rounded border border-border">
-                      <h5 className="font-semibold text-foreground mb-1">3. 商品構成の偏り</h5>
-                      <p className="text-sm text-muted-foreground">医療保険への依存度が高く、リスク分散が必要</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-border">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">改善アクション</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="p-3 bg-primary/10 rounded border border-primary/20">
-                      <h5 className="font-semibold text-foreground mb-1">短期施策（1-3ヶ月）</h5>
-                      <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                        <li>札幌・仙台支社への営業強化研修実施</li>
-                        <li>訪問数増加キャンペーンの展開</li>
-                      </ul>
-                    </div>
-                    <div className="p-3 bg-primary/10 rounded border border-primary/20">
-                      <h5 className="font-semibold text-foreground mb-1">中期施策（3-6ヶ月）</h5>
-                      <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                        <li>年金保険・がん保険の販売強化</li>
-                        <li>デジタルマーケティングの導入</li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* 支社別課題サマリー */}
+            {/* 統括部別実績サマリー */}
             <Card className="border border-border">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">支社別課題サマリー</CardTitle>
+                <CardTitle className="text-lg font-semibold">統括部別実績サマリー</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {branchPerformanceData.map(branch => {
-                    const achievementRate = Math.round(branch.anp / branch.target * 100);
+                  {departmentChartData.map(dept => {
+                    const anpAchievementRate = dept.anp.plan > 0 ? Math.round((dept.anp.actual / dept.anp.plan) * 100) : 0;
+                    const contractAchievementRate = dept.contracts.plan > 0 ? Math.round((dept.contracts.actual / dept.contracts.plan) * 100) : 0;
+                    const continuationAchievementRate = dept.continuationRate.plan > 0 ? Math.round((dept.continuationRate.actual / dept.continuationRate.plan) * 100) : 0;
+                    
                     return (
-                      <div key={branch.branchName} className="flex items-start gap-4 p-4 bg-muted/30 rounded border border-border">
-                        <div className="flex-1">
-                          <h5 className="font-semibold text-foreground">{branch.branchName}</h5>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {achievementRate >= 100 
-                              ? "目標達成。引き続き高水準の維持を期待"
-                              : achievementRate >= 90
-                              ? "目標達成まであと僅か。営業活動の強化が必要"
-                              : "目標未達。テコ入れが急務。営業戦略の見直しを推奨"}
-                          </p>
-                        </div>
-                        <div className={`px-3 py-1 rounded text-sm font-semibold ${
-                          achievementRate >= 100
-                            ? "bg-success/20 text-success"
-                            : achievementRate >= 90
-                            ? "bg-warning/20 text-warning"
-                            : "bg-destructive/20 text-destructive"
-                        }`}>
-                          {achievementRate}%
+                      <div key={dept.departmentName} className="p-4 bg-muted/30 rounded border border-border">
+                        <h5 className="font-semibold text-foreground mb-3">{dept.departmentName}</h5>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">新規ANP達成率</p>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-lg font-bold ${
+                                anpAchievementRate >= 100 ? "text-success" : 
+                                anpAchievementRate >= 90 ? "text-warning" : "text-destructive"
+                              }`}>
+                                {anpAchievementRate}%
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">新規契約数達成率</p>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-lg font-bold ${
+                                contractAchievementRate >= 100 ? "text-success" : 
+                                contractAchievementRate >= 90 ? "text-warning" : "text-destructive"
+                              }`}>
+                                {contractAchievementRate}%
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">継続率達成率</p>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-lg font-bold ${
+                                continuationAchievementRate >= 100 ? "text-success" : 
+                                continuationAchievementRate >= 90 ? "text-warning" : "text-destructive"
+                              }`}>
+                                {continuationAchievementRate}%
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );

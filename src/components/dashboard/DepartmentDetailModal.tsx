@@ -11,8 +11,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Building2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchBox } from "./SearchBox";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { PeriodSelector } from "./PeriodSelector";
 import { BranchDetailModal } from "./branch-detail/BranchDetailModal";
+import { BranchANPChart } from "./department-detail/BranchANPChart";
+import { BranchContractChart } from "./department-detail/BranchContractChart";
+import { BranchContinuationRateChart } from "./department-detail/BranchContinuationRateChart";
 import { generateBranchDetailData } from "@/data/sample-data-generator";
 import { getBranchById } from "@/data/branches";
 
@@ -23,11 +26,12 @@ interface DepartmentDetailModalProps {
   periodType: PeriodType;
 }
 
-export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType }: DepartmentDetailModalProps) => {
+export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType: initialPeriodType }: DepartmentDetailModalProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "anp" | "contracts" | "continuation">("anp");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
+  const [periodType, setPeriodType] = useState<PeriodType>(initialPeriodType);
 
   const filteredBranches = data.branches
     .filter(branch =>
@@ -57,24 +61,6 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType }: 
     return `¥${(value / 1000000).toFixed(0)}M`;
   };
 
-  const getAchievementColor = (rate: number) => {
-    if (rate >= 100) return "#10b981";
-    if (rate >= 90) return "#f59e0b";
-    return "#ef4444";
-  };
-
-  const chartDataANP = filteredBranches.slice(0, 10).map(branch => ({
-    name: branch.branchName.length > 6 ? branch.branchName.substring(0, 6) + "..." : branch.branchName,
-    achievementRate: branch.newANP.achievementRate,
-    fullName: branch.branchName
-  }));
-
-  const chartDataContracts = filteredBranches.slice(0, 10).map(branch => ({
-    name: branch.branchName.length > 6 ? branch.branchName.substring(0, 6) + "..." : branch.branchName,
-    achievementRate: branch.newContractCount.achievementRate,
-    fullName: branch.branchName
-  }));
-
   const handleSort = (column: typeof sortBy) => {
     if (sortBy === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -99,10 +85,13 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType }: 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-7xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-primary" />
-              {data.departmentName} - 詳細分析
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-2xl font-semibold flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-primary" />
+                {data.departmentName} - 詳細分析
+              </DialogTitle>
+              <PeriodSelector value={periodType} onChange={setPeriodType} />
+            </div>
           </DialogHeader>
           <ScrollArea className="h-[calc(90vh-100px)] pr-4">
             <div className="space-y-6">
@@ -184,69 +173,32 @@ export const DepartmentDetailModal = ({ open, onOpenChange, data, periodType }: 
                 </Card>
               </div>
 
-              {/* 支社別新規ANP達成率グラフ */}
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4">支社別新規ANP達成率 (上位10支社)</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartDataANP} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" domain={[0, 150]} />
-                      <YAxis dataKey="name" type="category" width={100} />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="bg-background border rounded-lg p-2 shadow-lg">
-                                <p className="font-semibold">{payload[0].payload.fullName}</p>
-                                <p className="text-sm">達成率: {payload[0].value}%</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Bar dataKey="achievementRate" radius={[0, 4, 4, 0]}>
-                        {chartDataANP.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={getAchievementColor(entry.achievementRate)} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              {/* 支社別新規ANP及び目標達成率グラフ */}
+              <BranchANPChart 
+                data={filteredBranches.map(branch => ({
+                  branchName: branch.branchName,
+                  actual: branch.newANP.actual,
+                  plan: branch.newANP.plan
+                }))}
+              />
 
-              {/* 支社別新規契約数達成率グラフ */}
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4">支社別新規契約数達成率 (上位10支社)</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartDataContracts} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" domain={[0, 150]} />
-                      <YAxis dataKey="name" type="category" width={100} />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="bg-background border rounded-lg p-2 shadow-lg">
-                                <p className="font-semibold">{payload[0].payload.fullName}</p>
-                                <p className="text-sm">達成率: {payload[0].value}%</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Bar dataKey="achievementRate" radius={[0, 4, 4, 0]}>
-                        {chartDataContracts.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={getAchievementColor(entry.achievementRate)} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              {/* 支社別新規契約数及び目標達成率グラフ */}
+              <BranchContractChart 
+                data={filteredBranches.map(branch => ({
+                  branchName: branch.branchName,
+                  actual: branch.newContractCount.actual,
+                  plan: branch.newContractCount.plan
+                }))}
+              />
+
+              {/* 支社別継続率及び目標達成率グラフ */}
+              <BranchContinuationRateChart 
+                data={filteredBranches.map(branch => ({
+                  branchName: branch.branchName,
+                  actual: branch.continuationRate,
+                  plan: 95.0 // デフォルト計画値
+                }))}
+              />
 
               {/* 支社別実績一覧 */}
               <Card>
