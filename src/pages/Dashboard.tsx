@@ -1,5 +1,8 @@
 import { KPICard } from "@/components/dashboard/KPICard";
-import { AgencyList } from "@/components/dashboard/AgencyList";
+import { DepartmentList } from "@/components/dashboard/DepartmentList";
+import { PeriodSelector } from "@/components/dashboard/PeriodSelector";
+import { PeriodType } from "@/types/kpi";
+import { useState as useStateReact } from "react";
 import { KPIDetailModal } from "@/components/dashboard/KPIDetailModal";
 import { BranchPerformanceChart } from "@/components/dashboard/BranchPerformanceChart";
 import { BranchContractChart } from "@/components/dashboard/BranchContractChart";
@@ -14,6 +17,7 @@ const Dashboard = () => {
     value: string;
     data: { month: string; value: number }[];
   } | null>(null);
+  const [periodType, setPeriodType] = useState<PeriodType>('monthly');
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>({
     showKPIs: true,
     showBranchPerformance: true,
@@ -160,7 +164,10 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold text-foreground mb-1">経営ダッシュボード</h1>
             <p className="text-sm text-muted-foreground">今月のパフォーマンス概要</p>
           </div>
-          <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
+          <div className="flex items-center gap-4">
+            <PeriodSelector value={periodType} onChange={setPeriodType} />
+            <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
+          </div>
         </div>
 
         <Tabs defaultValue="performance" className="space-y-6">
@@ -228,7 +235,7 @@ const Dashboard = () => {
 
               {dashboardConfig.showAgencyList && (
                 <div className="mb-8">
-                  <AgencyList />
+                  <DepartmentList periodType={periodType} />
                 </div>
               )}
             </TabsContent>

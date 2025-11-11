@@ -1,11 +1,18 @@
 export interface BranchKPI {
-  currentANP: number;
-  targetANP: number;
-  contractCount: number;
-  prevContractCount: number;
-  contractValue: number;
-  prevContractValue: number;
-  achievementRate: number;
+  newANP: {
+    plan: number;
+    actual: number;
+    achievementRate: number;
+  };
+  newContractCount: {
+    plan: number;
+    actual: number;
+    achievementRate: number;
+  };
+  continuationRate: {
+    actual: number;
+    previousMonth?: number;
+  };
   activeAgents: number;
   totalAgents: number;
 }

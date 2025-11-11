@@ -13,46 +13,40 @@ interface BranchKPICardsProps {
 export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
   const [selectedKPI, setSelectedKPI] = useState<string | null>(null);
 
-  const anpChange = ((kpi.currentANP - kpi.targetANP) / kpi.targetANP) * 100;
-  const contractChange = ((kpi.contractCount - kpi.prevContractCount) / kpi.prevContractCount) * 100;
-  const valueChange = ((kpi.contractValue - kpi.prevContractValue) / kpi.prevContractValue) * 100;
+  const anpChange = kpi.newANP.achievementRate - 100;
+  const contractChange = kpi.newContractCount.achievementRate - 100;
+  const continuationChange = kpi.continuationRate.previousMonth 
+    ? kpi.continuationRate.actual - kpi.continuationRate.previousMonth 
+    : 0;
 
   const kpiCards = [
     {
       id: "anp",
-      title: "今月ANP",
-      value: `¥${kpi.currentANP}M`,
+      title: "新規ANP",
+      value: `¥${(kpi.newANP.actual / 1000000).toFixed(1)}M`,
       change: anpChange,
-      label: "対目標",
+      label: "達成率",
       dataKey: "anp",
     },
     {
       id: "contracts",
-      title: "保有契約数",
-      value: `${kpi.contractCount.toLocaleString()}件`,
+      title: "新規契約数",
+      value: `${kpi.newContractCount.actual}件`,
       change: contractChange,
-      label: "対前月",
+      label: "達成率",
       dataKey: "contractCount",
     },
     {
-      id: "value",
-      title: "保有契約高",
-      value: `¥${(kpi.contractValue / 100).toFixed(1)}億円`,
-      change: valueChange,
+      id: "continuation",
+      title: "継続率",
+      value: `${kpi.continuationRate.actual}%`,
+      change: continuationChange,
       label: "対前月",
       dataKey: "contractCount",
-    },
-    {
-      id: "achievement",
-      title: "達成率",
-      value: `${kpi.achievementRate}%`,
-      change: kpi.achievementRate - 100,
-      label: "目標比",
-      dataKey: "anp",
     },
     {
       id: "agents",
-      title: "エージェント数",
+      title: "営業社員数",
       value: `${kpi.activeAgents}名`,
       subValue: `全体: ${kpi.totalAgents}名`,
       icon: Users,
