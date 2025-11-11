@@ -31,25 +31,33 @@ export const AgencyList = () => {
     
     // KPIデータ
     const kpi = {
-      currentANP: branch.anp,
-      targetANP: branch.anp / 1.08,
-      contractCount: Math.floor(branch.anp * 13.2),
-      prevContractCount: Math.floor(branch.anp * 12.8),
-      contractValue: Math.floor(branch.anp * 2.05),
-      prevContractValue: Math.floor(branch.anp * 2.0),
-      achievementRate: 108,
+      newANP: {
+        plan: branch.anp / 1.08,
+        actual: branch.anp,
+        achievementRate: 108,
+      },
+      newContractCount: {
+        plan: Math.floor(branch.anp * 12.8),
+        actual: Math.floor(branch.anp * 13.2),
+        achievementRate: 103,
+      },
+      continuationRate: {
+        actual: 96.5,
+        previousMonth: 96.2,
+      },
       activeAgents: Math.floor(branch.anp / 4.5),
       totalAgents: Math.floor(branch.anp / 4.1),
     };
 
     // 月次データ
+    const contractCount = kpi.newContractCount.actual;
     const monthlyData = [
-      { month: "10月", anp: branch.anp * 0.85, contractCount: kpi.contractCount * 0.85 },
-      { month: "11月", anp: branch.anp * 0.88, contractCount: kpi.contractCount * 0.88 },
-      { month: "12月", anp: branch.anp * 0.91, contractCount: kpi.contractCount * 0.91 },
-      { month: "1月", anp: branch.anp * 0.94, contractCount: kpi.contractCount * 0.94 },
-      { month: "2月", anp: branch.anp * 0.97, contractCount: kpi.contractCount * 0.97 },
-      { month: "3月", anp: branch.anp, contractCount: kpi.contractCount },
+      { month: "10月", anp: branch.anp * 0.85, contractCount: contractCount * 0.85 },
+      { month: "11月", anp: branch.anp * 0.88, contractCount: contractCount * 0.88 },
+      { month: "12月", anp: branch.anp * 0.91, contractCount: contractCount * 0.91 },
+      { month: "1月", anp: branch.anp * 0.94, contractCount: contractCount * 0.94 },
+      { month: "2月", anp: branch.anp * 0.97, contractCount: contractCount * 0.97 },
+      { month: "3月", anp: branch.anp, contractCount: contractCount },
     ];
 
     // エージェントデータ
@@ -57,7 +65,7 @@ export const AgencyList = () => {
       id: `agent-${i + 1}`,
       name: `エージェント ${String.fromCharCode(65 + i)}`,
       anp: Number((branch.anp / 8 * (1 + (Math.random() - 0.5) * 0.4)).toFixed(1)),
-      contractCount: Math.floor(kpi.contractCount / 8 * (1 + (Math.random() - 0.5) * 0.4)),
+      contractCount: Math.floor(contractCount / 8 * (1 + (Math.random() - 0.5) * 0.4)),
       achievementRate: Math.floor(90 + Math.random() * 25),
       trend: monthlyData.map((m) => ({
         month: m.month,
@@ -70,8 +78,8 @@ export const AgencyList = () => {
       {
         productName: "終身保険",
         anp: Number((branch.anp * 0.35).toFixed(1)),
-        contractCount: Math.floor(kpi.contractCount * 0.30),
-        avgContractValue: Number((branch.anp * 0.35 / (kpi.contractCount * 0.30)).toFixed(2)),
+        contractCount: Math.floor(contractCount * 0.30),
+        avgContractValue: Number((branch.anp * 0.35 / (contractCount * 0.30)).toFixed(2)),
         previousMonthAnp: Number((branch.anp * 0.34).toFixed(1)),
         trend: monthlyData.map((m) => ({
           month: m.month,
@@ -82,8 +90,8 @@ export const AgencyList = () => {
       {
         productName: "医療保険",
         anp: Number((branch.anp * 0.28).toFixed(1)),
-        contractCount: Math.floor(kpi.contractCount * 0.35),
-        avgContractValue: Number((branch.anp * 0.28 / (kpi.contractCount * 0.35)).toFixed(2)),
+        contractCount: Math.floor(contractCount * 0.35),
+        avgContractValue: Number((branch.anp * 0.28 / (contractCount * 0.35)).toFixed(2)),
         previousMonthAnp: Number((branch.anp * 0.27).toFixed(1)),
         trend: monthlyData.map((m) => ({
           month: m.month,
@@ -94,8 +102,8 @@ export const AgencyList = () => {
       {
         productName: "がん保険",
         anp: Number((branch.anp * 0.18).toFixed(1)),
-        contractCount: Math.floor(kpi.contractCount * 0.15),
-        avgContractValue: Number((branch.anp * 0.18 / (kpi.contractCount * 0.15)).toFixed(2)),
+        contractCount: Math.floor(contractCount * 0.15),
+        avgContractValue: Number((branch.anp * 0.18 / (contractCount * 0.15)).toFixed(2)),
         previousMonthAnp: Number((branch.anp * 0.19).toFixed(1)),
         trend: monthlyData.map((m) => ({
           month: m.month,
@@ -106,8 +114,8 @@ export const AgencyList = () => {
       {
         productName: "年金保険",
         anp: Number((branch.anp * 0.12).toFixed(1)),
-        contractCount: Math.floor(kpi.contractCount * 0.12),
-        avgContractValue: Number((branch.anp * 0.12 / (kpi.contractCount * 0.12)).toFixed(2)),
+        contractCount: Math.floor(contractCount * 0.12),
+        avgContractValue: Number((branch.anp * 0.12 / (contractCount * 0.12)).toFixed(2)),
         previousMonthAnp: Number((branch.anp * 0.13).toFixed(1)),
         trend: monthlyData.map((m) => ({
           month: m.month,
@@ -118,8 +126,8 @@ export const AgencyList = () => {
       {
         productName: "その他",
         anp: Number((branch.anp * 0.07).toFixed(1)),
-        contractCount: Math.floor(kpi.contractCount * 0.08),
-        avgContractValue: Number((branch.anp * 0.07 / (kpi.contractCount * 0.08)).toFixed(2)),
+        contractCount: Math.floor(contractCount * 0.08),
+        avgContractValue: Number((branch.anp * 0.07 / (contractCount * 0.08)).toFixed(2)),
         previousMonthAnp: Number((branch.anp * 0.07).toFixed(1)),
         trend: monthlyData.map((m) => ({
           month: m.month,
@@ -131,12 +139,12 @@ export const AgencyList = () => {
 
     // 契約内訳データ
     const contractBreakdown = {
-      newContracts: Math.floor(kpi.contractCount * 0.08),
-      prevNewContracts: Math.floor(kpi.contractCount * 0.075),
-      cancellations: Math.floor(kpi.contractCount * 0.045),
-      prevCancellations: Math.floor(kpi.contractCount * 0.05),
-      netIncrease: Math.floor(kpi.contractCount * 0.035),
-      prevNetIncrease: Math.floor(kpi.contractCount * 0.025),
+      newContracts: Math.floor(contractCount * 0.08),
+      prevNewContracts: Math.floor(contractCount * 0.075),
+      cancellations: Math.floor(contractCount * 0.045),
+      prevCancellations: Math.floor(contractCount * 0.05),
+      netIncrease: Math.floor(contractCount * 0.035),
+      prevNetIncrease: Math.floor(contractCount * 0.025),
       cancellationRate: 4.5,
       monthlyTrend: monthlyData.map((m, i) => ({
         month: m.month,
@@ -146,32 +154,32 @@ export const AgencyList = () => {
         cancelRate: Number((5.0 - i * 0.1).toFixed(1)),
       })),
       acquisitionChannels: [
-        { channel: "紹介", count: Math.floor(kpi.contractCount * 0.035), percentage: 43.8 },
-        { channel: "新規営業", count: Math.floor(kpi.contractCount * 0.025), percentage: 31.2 },
-        { channel: "キャンペーン", count: Math.floor(kpi.contractCount * 0.012), percentage: 15.0 },
-        { channel: "デジタル", count: Math.floor(kpi.contractCount * 0.006), percentage: 7.5 },
-        { channel: "その他", count: Math.floor(kpi.contractCount * 0.002), percentage: 2.5 },
+        { channel: "紹介", count: Math.floor(contractCount * 0.035), percentage: 43.8 },
+        { channel: "新規営業", count: Math.floor(contractCount * 0.025), percentage: 31.2 },
+        { channel: "キャンペーン", count: Math.floor(contractCount * 0.012), percentage: 15.0 },
+        { channel: "デジタル", count: Math.floor(contractCount * 0.006), percentage: 7.5 },
+        { channel: "その他", count: Math.floor(contractCount * 0.002), percentage: 2.5 },
       ],
     };
 
     // 顧客セグメントデータ
     const customerSegments = {
       ageSegments: [
-        { ageRange: "20代", contractCount: Math.floor(kpi.contractCount * 0.12), anp: Number((branch.anp * 0.10).toFixed(1)), percentage: 12.0 },
-        { ageRange: "30代", contractCount: Math.floor(kpi.contractCount * 0.28), anp: Number((branch.anp * 0.26).toFixed(1)), percentage: 28.0 },
-        { ageRange: "40代", contractCount: Math.floor(kpi.contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
-        { ageRange: "50代", contractCount: Math.floor(kpi.contractCount * 0.20), anp: Number((branch.anp * 0.22).toFixed(1)), percentage: 20.0 },
-        { ageRange: "60代以上", contractCount: Math.floor(kpi.contractCount * 0.08), anp: Number((branch.anp * 0.07).toFixed(1)), percentage: 8.0 },
+        { ageRange: "20代", contractCount: Math.floor(contractCount * 0.12), anp: Number((branch.anp * 0.10).toFixed(1)), percentage: 12.0 },
+        { ageRange: "30代", contractCount: Math.floor(contractCount * 0.28), anp: Number((branch.anp * 0.26).toFixed(1)), percentage: 28.0 },
+        { ageRange: "40代", contractCount: Math.floor(contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
+        { ageRange: "50代", contractCount: Math.floor(contractCount * 0.20), anp: Number((branch.anp * 0.22).toFixed(1)), percentage: 20.0 },
+        { ageRange: "60代以上", contractCount: Math.floor(contractCount * 0.08), anp: Number((branch.anp * 0.07).toFixed(1)), percentage: 8.0 },
       ],
       genderSegments: [
-        { gender: "男性", contractCount: Math.floor(kpi.contractCount * 0.58), anp: Number((branch.anp * 0.60).toFixed(1)), percentage: 58.0 },
-        { gender: "女性", contractCount: Math.floor(kpi.contractCount * 0.42), anp: Number((branch.anp * 0.40).toFixed(1)), percentage: 42.0 },
+        { gender: "男性", contractCount: Math.floor(contractCount * 0.58), anp: Number((branch.anp * 0.60).toFixed(1)), percentage: 58.0 },
+        { gender: "女性", contractCount: Math.floor(contractCount * 0.42), anp: Number((branch.anp * 0.40).toFixed(1)), percentage: 42.0 },
       ],
       contractDurationSegments: [
-        { duration: "新規1年未満", contractCount: Math.floor(kpi.contractCount * 0.15), anp: Number((branch.anp * 0.12).toFixed(1)), percentage: 15.0 },
-        { duration: "1-3年", contractCount: Math.floor(kpi.contractCount * 0.25), anp: Number((branch.anp * 0.23).toFixed(1)), percentage: 25.0 },
-        { duration: "3-5年", contractCount: Math.floor(kpi.contractCount * 0.28), anp: Number((branch.anp * 0.30).toFixed(1)), percentage: 28.0 },
-        { duration: "5年以上", contractCount: Math.floor(kpi.contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
+        { duration: "新規1年未満", contractCount: Math.floor(contractCount * 0.15), anp: Number((branch.anp * 0.12).toFixed(1)), percentage: 15.0 },
+        { duration: "1-3年", contractCount: Math.floor(contractCount * 0.25), anp: Number((branch.anp * 0.23).toFixed(1)), percentage: 25.0 },
+        { duration: "3-5年", contractCount: Math.floor(contractCount * 0.28), anp: Number((branch.anp * 0.30).toFixed(1)), percentage: 28.0 },
+        { duration: "5年以上", contractCount: Math.floor(contractCount * 0.32), anp: Number((branch.anp * 0.35).toFixed(1)), percentage: 32.0 },
       ],
     };
 
