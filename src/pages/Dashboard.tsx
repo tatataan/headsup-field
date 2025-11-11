@@ -116,6 +116,16 @@ const Dashboard = () => {
 
 
 
+  // 期間ラベルを取得
+  const getPeriodLabel = () => {
+    switch (periodType) {
+      case 'monthly': return '今月';
+      case 'quarterly': return '今四半期';
+      case 'yearly': return '今年度';
+      default: return '今月';
+    }
+  };
+
   const handleKPIClick = (title: string, value: string) => {
     setSelectedKPI({ title, value, data: [] });
   };
@@ -126,7 +136,7 @@ const Dashboard = () => {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-1">経営ダッシュボード</h1>
-            <p className="text-sm text-muted-foreground">今月のパフォーマンス概要</p>
+            <p className="text-sm text-muted-foreground">{getPeriodLabel()}のパフォーマンス概要</p>
           </div>
           <div className="flex items-center gap-4">
             <PeriodSelector value={periodType} onChange={setPeriodType} />
@@ -150,21 +160,21 @@ const Dashboard = () => {
                   {/* 全社KPIカード */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <KPICard
-                      title="全社新規ANP"
+                      title={`全社新規ANP（${getPeriodLabel()}）`}
                       value={`¥${(companyKPI.newANP.actual / 1000000).toFixed(0)}M`}
                       change={`計画: ¥${(companyKPI.newANP.plan / 1000000).toFixed(0)}M`}
                       changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : "negative"}
                       onClick={() => {}}
                     />
                     <KPICard
-                      title="全社新規契約数"
+                      title={`全社新規契約数（${getPeriodLabel()}）`}
                       value={`${companyKPI.newContractCount.actual.toLocaleString()}件`}
                       change={`計画: ${companyKPI.newContractCount.plan.toLocaleString()}件`}
                       changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : "negative"}
                       onClick={() => {}}
                     />
                     <KPICard
-                      title="全社継続率"
+                      title={`全社継続率（${getPeriodLabel()}）`}
                       value={`${companyKPI.continuationRate.actual.toFixed(1)}%`}
                       change={`計画: ${companyKPI.continuationRate.plan.toFixed(1)}%`}
                       changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : "negative"}
