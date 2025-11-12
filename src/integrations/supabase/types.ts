@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      agency_branches: {
+        Row: {
+          agency_id: string
+          branch_id: string
+          created_at: string
+          department_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          branch_id: string
+          created_at?: string
+          department_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          branch_id?: string
+          created_at?: string
+          department_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hearing_history: {
         Row: {
           agency_id: string

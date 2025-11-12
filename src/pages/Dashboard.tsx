@@ -17,12 +17,26 @@ import { generatePeriodData } from "@/data/sample-data-generator";
 import { AchievementLegend } from "@/components/ui/achievement-legend";
 import { EnhancedKPICards } from "@/components/dashboard/EnhancedKPICards";
 import { generateHistoricalTrendData } from "@/data/sample-data-generator";
-import { useHearingHistory, useThemeAnalysis } from "@/hooks/useHearingHistory";
+import { 
+  useHearingHistory, 
+  useThemeAnalysis, 
+  useEnrichedHearingHistory,
+  useDepartmentComparison,
+  useBranchComparison,
+  useDepartmentRanking,
+  useBranchRanking
+} from "@/hooks/useHearingHistory";
 import { ThemeDistributionChart } from "@/components/dashboard/issues/ThemeDistributionChart";
 import { CommonIssuesSummary } from "@/components/dashboard/issues/CommonIssuesSummary";
 import { QualitativeInsights } from "@/components/dashboard/issues/QualitativeInsights";
 import { ThemeTimeline } from "@/components/dashboard/issues/ThemeTimeline";
 import { ThemeDrillDownModal } from "@/components/dashboard/issues/ThemeDrillDownModal";
+import { OrganizationSelector, ViewMode } from "@/components/dashboard/issues/OrganizationSelector";
+import { DepartmentComparisonChart } from "@/components/dashboard/issues/DepartmentComparisonChart";
+import { BranchComparisonChart } from "@/components/dashboard/issues/BranchComparisonChart";
+import { OrganizationRankingTable } from "@/components/dashboard/issues/OrganizationRankingTable";
+import { DepartmentIssuesModal } from "@/components/dashboard/issues/DepartmentIssuesModal";
+import { BranchIssuesModal } from "@/components/dashboard/issues/BranchIssuesModal";
 
 const Dashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<{
@@ -37,11 +51,69 @@ const Dashboard = () => {
     showDepartmentList: true,
   });
 
-  // Hearing history data
+  // Hearing history data and organization filters
   const { data: hearingHistory = [] } = useHearingHistory();
+  const { data: enrichedHistory = [] } = useEnrichedHearingHistory();
   const { data: themeAnalysis } = useThemeAnalysis();
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedMiddleTheme, setSelectedMiddleTheme] = useState<string | undefined>(undefined);
+  
+  // Organization filters
+  const [viewMode, setViewMode] = useState<ViewMode>('company');
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
+  const [drillDownDepartmentId, setDrillDownDepartmentId] = useState<string | null>(null);
+  const [drillDownBranchId, setDrillDownBranchId] = useState<string | null>(null);
+
+  // Comparison and ranking data
+  const departmentComparison = useDepartmentComparison();
+  const branchComparison = useBranchComparison(selectedDepartmentId);
+  const departmentRanking = useDepartmentRanking();
+  const branchRanking = useBranchRanking(selectedDepartmentId);
+
+  // Filtered data based on view mode
+  const filteredHearingHistory = useMemo(() => {
+    if (viewMode === 'company') return enrichedHistory;
+    
+    if (viewMode === 'department' && selectedDepartmentId) {
+      return enrichedHistory.filter(h => (h as any).enrichedDepartmentId === selectedDepartmentId);
+    }
+    
+    if (viewMode === 'branch' && selectedBranchId) {
+      return enrichedHistory.filter(h => (h as any).enrichedBranchId === selectedBranchId);
+    }
+    
+    if (viewMode === 'branch' && selectedDepartmentId && !selectedBranchId) {
+      return enrichedHistory.filter(h => (h as any).enrichedDepartmentId === selectedDepartmentId);
+    }
+    
+    return enrichedHistory;
+  }, [enrichedHistory, viewMode, selectedDepartmentId, selectedBranchId]);
+
+  // Recalculate theme analysis for filtered data
+  const filteredThemeAnalysis = useMemo(() => {
+    if (!filteredHearingHistory.length) return null;
+
+    const themeCount: Record<string, number> = {};
+    const middleThemeCount: Record<string, Record<string, number>> = {};
+
+    filteredHearingHistory.forEach((record) => {
+      themeCount[record.major_theme] = (themeCount[record.major_theme] || 0) + 1;
+
+      if (!middleThemeCount[record.major_theme]) {
+        middleThemeCount[record.major_theme] = {};
+      }
+      middleThemeCount[record.major_theme][record.middle_theme] = 
+        (middleThemeCount[record.major_theme][record.middle_theme] || 0) + 1;
+    });
+
+    return {
+      themeCount,
+      middleThemeCount,
+      totalHearings: filteredHearingHistory.length,
+      uniqueThemes: Object.keys(themeCount).length,
+    };
+  }, [filteredHearingHistory]);
 
   // 全社KPIデータを統括部から集計
   const companyKPI = useMemo(() => {
@@ -244,6 +316,16 @@ const Dashboard = () => {
             </TabsContent>
 
           <TabsContent value="issues" className="space-y-6">
+            {/* Organization Selector */}
+            <OrganizationSelector
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              selectedDepartmentId={selectedDepartmentId}
+              onDepartmentChange={setSelectedDepartmentId}
+              selectedBranchId={selectedBranchId}
+              onBranchChange={setSelectedBranchId}
+            />
+
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
@@ -251,7 +333,7 @@ const Dashboard = () => {
                   <CardTitle className="text-sm text-muted-foreground">総ヒアリング数</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{themeAnalysis?.totalHearings || 0}</p>
+                  <p className="text-3xl font-bold">{filteredThemeAnalysis?.totalHearings || 0}</p>
                 </CardContent>
               </Card>
               <Card>
@@ -259,7 +341,7 @@ const Dashboard = () => {
                   <CardTitle className="text-sm text-muted-foreground">識別された課題テーマ</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{themeAnalysis?.uniqueThemes || 0}</p>
+                  <p className="text-3xl font-bold">{filteredThemeAnalysis?.uniqueThemes || 0}</p>
                 </CardContent>
               </Card>
               <Card>
@@ -268,19 +350,60 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg font-semibold">
-                    {themeAnalysis && Object.entries(themeAnalysis.themeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}
+                    {filteredThemeAnalysis && Object.entries(filteredThemeAnalysis.themeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}
                   </p>
                 </CardContent>
               </Card>
             </div>
 
+            {/* Comparison Charts based on view mode */}
+            {viewMode === 'department' && !selectedDepartmentId && departmentComparison.length > 0 && (
+              <DepartmentComparisonChart
+                data={departmentComparison.map(d => ({
+                  departmentId: d.departmentId,
+                  themes: d.themes,
+                  total: d.total
+                }))}
+                onDepartmentClick={setDrillDownDepartmentId}
+              />
+            )}
+
+            {viewMode === 'branch' && branchComparison.length > 0 && (
+              <BranchComparisonChart
+                data={branchComparison.map(b => ({
+                  branchId: b.branchId,
+                  themes: b.themes,
+                  total: b.total
+                }))}
+                onBranchClick={setDrillDownBranchId}
+                topN={15}
+              />
+            )}
+
+            {/* Ranking Tables */}
+            {viewMode === 'department' && !selectedDepartmentId && departmentRanking.length > 0 && (
+              <OrganizationRankingTable
+                data={departmentRanking.map(d => ({ id: d.departmentId, themes: d.themes, total: d.total }))}
+                type="department"
+                onDrillDown={setDrillDownDepartmentId}
+              />
+            )}
+
+            {viewMode === 'branch' && branchRanking.length > 0 && (
+              <OrganizationRankingTable
+                data={branchRanking.map(b => ({ id: b.branchId, themes: b.themes, total: b.total }))}
+                type="branch"
+                onDrillDown={setDrillDownBranchId}
+              />
+            )}
+
             {/* Theme Distribution Chart */}
-            {themeAnalysis && (
+            {filteredThemeAnalysis && (
               <ThemeDistributionChart
-                data={Object.entries(themeAnalysis.themeCount).map(([theme, count]) => ({
+                data={Object.entries(filteredThemeAnalysis.themeCount).map(([theme, count]) => ({
                   theme,
                   count,
-                  percentage: (count / themeAnalysis.totalHearings) * 100
+                  percentage: (count / filteredThemeAnalysis.totalHearings) * 100
                 })).sort((a, b) => b.count - a.count)}
                 onThemeClick={(theme) => {
                   setSelectedTheme(theme);
@@ -290,20 +413,20 @@ const Dashboard = () => {
             )}
 
             {/* Common Issues Summary */}
-            {themeAnalysis && (
+            {filteredThemeAnalysis && (
               <CommonIssuesSummary
                 issues={
-                  Object.entries(themeAnalysis.middleThemeCount)
+                  Object.entries(filteredThemeAnalysis.middleThemeCount)
                     .flatMap(([majorTheme, middleThemes]) =>
                       Object.entries(middleThemes).map(([middleTheme, count]) => {
-                        const sampleRecord = hearingHistory.find(
+                        const sampleRecord = filteredHearingHistory.find(
                           h => h.major_theme === majorTheme && h.middle_theme === middleTheme
                         );
                         return {
                           theme: majorTheme,
                           middleTheme,
                           count,
-                          percentage: (count / themeAnalysis.totalHearings) * 100,
+                          percentage: (count / filteredThemeAnalysis.totalHearings) * 100,
                           trend: "stable" as const,
                           sampleContent: sampleRecord?.content || ""
                         };
@@ -320,10 +443,10 @@ const Dashboard = () => {
             )}
 
             {/* Theme Timeline */}
-            <ThemeTimeline hearingHistory={hearingHistory} />
+            <ThemeTimeline hearingHistory={filteredHearingHistory} />
 
             {/* Qualitative Insights */}
-            <QualitativeInsights hearingHistory={hearingHistory} />
+            <QualitativeInsights hearingHistory={filteredHearingHistory} />
 
             {/* Theme Drill Down Modal */}
             <ThemeDrillDownModal
@@ -336,7 +459,22 @@ const Dashboard = () => {
               }}
               theme={selectedTheme}
               middleTheme={selectedMiddleTheme}
-              hearingHistory={hearingHistory}
+              hearingHistory={filteredHearingHistory}
+            />
+
+            {/* Department Issues Modal */}
+            <DepartmentIssuesModal
+              open={drillDownDepartmentId !== null}
+              onOpenChange={(open) => !open && setDrillDownDepartmentId(null)}
+              departmentId={drillDownDepartmentId}
+              onBranchClick={setDrillDownBranchId}
+            />
+
+            {/* Branch Issues Modal */}
+            <BranchIssuesModal
+              open={drillDownBranchId !== null}
+              onOpenChange={(open) => !open && setDrillDownBranchId(null)}
+              branchId={drillDownBranchId}
             />
           </TabsContent>
         </Tabs>
