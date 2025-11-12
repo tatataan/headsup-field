@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { branches } from "@/data/branches";
+import { getDepartmentByBranchId } from "@/data/departments";
 
 interface ThemeDistribution {
   id: string;
@@ -26,8 +29,65 @@ interface ThemeDistribution {
   created_at: string;
 }
 
+// Helper function to generate dummy responses
+const generateDummyResponses = (
+  distributionId: string,
+  startDate: string,
+  endDate: string
+) => {
+  const responses: any[] = [];
+  const startTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+  
+  const responseNotes = [
+    "対応完了しました",
+    "顧客への説明を実施しました",
+    "資料を配布し、説明を行いました",
+    "全営業担当者に周知済みです",
+    "朝礼で共有し、理解を深めました",
+  ];
+
+  branches.forEach((branch) => {
+    const department = getDepartmentByBranchId(branch.id);
+    if (!department) return;
+
+    // Randomly select 40-60% of agencies to respond
+    const responseRate = 0.4 + Math.random() * 0.2; // 40-60%
+    const respondingAgencies = Math.floor(branch.agentCount * responseRate);
+
+    for (let i = 0; i < respondingAgencies; i++) {
+      // Generate unique agency_id
+      const agencyNumber = String(i + 1).padStart(3, "0");
+      const agencyId = `AGY-${branch.code}-${agencyNumber}`;
+
+      // Generate random responded_at within distribution period
+      const randomTime = startTime + Math.random() * (endTime - startTime);
+      const respondedAt = new Date(randomTime).toISOString();
+
+      // 30% get a response_note
+      const hasNote = Math.random() < 0.3;
+      const responseNote = hasNote
+        ? responseNotes[Math.floor(Math.random() * responseNotes.length)]
+        : null;
+
+      responses.push({
+        distribution_id: distributionId,
+        agency_id: agencyId,
+        branch_id: branch.id,
+        department_id: department.id,
+        responded_at: respondedAt,
+        response_note: responseNote,
+      });
+    }
+  });
+
+  return responses;
+};
+
 export const ThemeHistoryList = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: distributions, isLoading } = useQuery({
     queryKey: ["theme-distributions"],
@@ -51,6 +111,49 @@ export const ThemeHistoryList = () => {
 
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Mutation for simulating data
+  const simulateMutation = useMutation({
+    mutationFn: async (dist: ThemeDistribution) => {
+      // Step 1: DELETE all existing responses for this distribution
+      const { error: deleteError } = await supabase
+        .from("theme_responses")
+        .delete()
+        .eq("distribution_id", dist.id);
+
+      if (deleteError) throw deleteError;
+
+      // Step 2: Generate and INSERT new dummy data
+      const dummyData = generateDummyResponses(
+        dist.id,
+        dist.distribution_start_date,
+        dist.distribution_end_date
+      );
+
+      const { error: insertError } = await supabase
+        .from("theme_responses")
+        .insert(dummyData);
+
+      if (insertError) throw insertError;
+
+      return dummyData.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ["theme-responses"] });
+      toast({
+        title: "データシミュレート完了",
+        description: `${count}件の対応データを生成しました`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "エラー",
+        description: "データ生成に失敗しました",
+        variant: "destructive",
+      });
+      console.error("Simulation error:", error);
     },
   });
 
