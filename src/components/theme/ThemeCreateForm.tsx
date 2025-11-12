@@ -106,7 +106,8 @@ export const ThemeCreateForm = () => {
   const isFormValid = title && content && majorTheme && middleTheme && detailTheme && startDate && endDate;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
         {/* Step 1: Main Content Card */}
         <Card className="p-6 border-primary/20">
@@ -143,22 +144,15 @@ export const ThemeCreateForm = () => {
               />
             </div>
 
-            <div className="flex gap-3">
+            <div>
               <Button
                 onClick={handleAIGenerate}
                 variant="outline"
                 disabled={isGenerating}
+                className="w-full"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 {isGenerating ? "生成中..." : "AIで生成"}
-              </Button>
-              <Button
-                onClick={handlePost}
-                disabled={!isFormValid}
-                className="flex-1"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                投稿する
               </Button>
             </div>
           </div>
@@ -187,9 +181,12 @@ export const ThemeCreateForm = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Date Range Card */}
+        {/* Step 3: Date Range Card */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">配信期間</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">3</span>
+            配信期間
+          </h3>
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
@@ -198,23 +195,27 @@ export const ThemeCreateForm = () => {
           />
         </Card>
 
-        {/* Target Selection Card */}
+        {/* Step 4: Target Selection Card */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">配信対象</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">4</span>
+            配信対象
+          </h3>
           <OrganizationTargetSelector
             selectedTargets={selectedTargets}
             onChange={setSelectedTargets}
           />
         </Card>
 
-        {/* Required Response Toggle */}
+        {/* Step 5: Required Response Toggle */}
         <Card className="p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">5</span>
+            必須対応
+          </h3>
           <div className="flex items-center justify-between">
             <div>
-              <Label htmlFor="required-toggle" className="text-base font-semibold">
-                必須対応
-              </Label>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground">
                 対応状況を追跡します
               </p>
             </div>
@@ -227,5 +228,31 @@ export const ThemeCreateForm = () => {
         </Card>
       </div>
     </div>
+
+    {/* Prominent Submit Section */}
+    <Card className="p-6 border-primary/20 bg-primary/5 mt-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-1">
+            投稿の準備が完了しました
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {isFormValid 
+              ? "下のボタンをクリックして配信してください" 
+              : "全ての必須項目を入力してください"}
+          </p>
+        </div>
+        <Button
+          onClick={handlePost}
+          disabled={!isFormValid}
+          size="lg"
+          className="min-w-[160px]"
+        >
+          <Send className="w-4 h-4 mr-2" />
+          投稿する
+        </Button>
+      </div>
+    </Card>
+    </>
   );
 };
