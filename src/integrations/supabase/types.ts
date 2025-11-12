@@ -86,24 +86,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          created_at: string | null
-          full_name: string
-          id: string
-        }
-        Insert: {
-          created_at?: string | null
-          full_name: string
-          id: string
-        }
-        Update: {
-          created_at?: string | null
-          full_name?: string
-          id?: string
-        }
-        Relationships: []
-      }
       theme_distributions: {
         Row: {
           content: string
