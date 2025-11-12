@@ -45,6 +45,7 @@ const Dashboard = () => {
     data: { month: string; value: number }[];
   } | null>(null);
   const [periodType, setPeriodType] = useState<PeriodType>('monthly');
+  const [activeTab, setActiveTab] = useState<'performance' | 'issues'>('performance');
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>({
     showKPIs: true,
     showDepartmentCharts: true,
@@ -235,16 +236,20 @@ const Dashboard = () => {
                 weekday: 'long'
               })} 現在
             </p>
-            <p className="text-sm text-muted-foreground mt-1">{getPeriodLabel()}のパフォーマンス概要</p>
+            {activeTab === 'performance' && (
+              <p className="text-sm text-muted-foreground mt-1">{getPeriodLabel()}のパフォーマンス概要</p>
+            )}
           </div>
           <div className="flex items-center gap-4">
-            <AchievementLegend />
-            <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
+            {activeTab === 'performance' && <AchievementLegend />}
+            {activeTab === 'performance' && (
+              <DashboardCustomizer config={dashboardConfig} onConfigChange={setDashboardConfig} />
+            )}
             <PeriodSelector value={periodType} onChange={setPeriodType} />
           </div>
         </div>
 
-        <Tabs defaultValue="performance" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'performance' | 'issues')} className="space-y-6">
           <TabsList className="bg-card border border-border">
             <TabsTrigger value="performance" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               パフォーマンス
