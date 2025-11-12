@@ -17,6 +17,12 @@ import { generatePeriodData } from "@/data/sample-data-generator";
 import { AchievementLegend } from "@/components/ui/achievement-legend";
 import { EnhancedKPICards } from "@/components/dashboard/EnhancedKPICards";
 import { generateHistoricalTrendData } from "@/data/sample-data-generator";
+import { useHearingHistory, useThemeAnalysis } from "@/hooks/useHearingHistory";
+import { ThemeDistributionChart } from "@/components/dashboard/issues/ThemeDistributionChart";
+import { CommonIssuesSummary } from "@/components/dashboard/issues/CommonIssuesSummary";
+import { QualitativeInsights } from "@/components/dashboard/issues/QualitativeInsights";
+import { ThemeTimeline } from "@/components/dashboard/issues/ThemeTimeline";
+import { ThemeDrillDownModal } from "@/components/dashboard/issues/ThemeDrillDownModal";
 
 const Dashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<{
@@ -30,6 +36,12 @@ const Dashboard = () => {
     showDepartmentCharts: true,
     showDepartmentList: true,
   });
+
+  // Hearing history data
+  const { data: hearingHistory = [] } = useHearingHistory();
+  const { data: themeAnalysis } = useThemeAnalysis();
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
+  const [selectedMiddleTheme, setSelectedMiddleTheme] = useState<string | undefined>(undefined);
 
   // 全社KPIデータを統括部から集計
   const companyKPI = useMemo(() => {
@@ -232,72 +244,100 @@ const Dashboard = () => {
             </TabsContent>
 
           <TabsContent value="issues" className="space-y-6">
-            {/* 経営課題 */}
-            <Card className="border border-border">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">経営課題分析</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">統括部・支社別の詳細な課題分析を表示します。</p>
-              </CardContent>
-            </Card>
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">総ヒアリング数</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold">{themeAnalysis?.totalHearings || 0}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">識別された課題テーマ</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold">{themeAnalysis?.uniqueThemes || 0}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">最多課題</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-lg font-semibold">
+                    {themeAnalysis && Object.entries(themeAnalysis.themeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* 統括部別実績サマリー */}
-            <Card className="border border-border">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">統括部別実績サマリー</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {departmentChartData.map(dept => {
-                    const anpAchievementRate = dept.anp.plan > 0 ? Math.round((dept.anp.actual / dept.anp.plan) * 100) : 0;
-                    const contractAchievementRate = dept.contracts.plan > 0 ? Math.round((dept.contracts.actual / dept.contracts.plan) * 100) : 0;
-                    const continuationAchievementRate = dept.continuationRate.plan > 0 ? Math.round((dept.continuationRate.actual / dept.continuationRate.plan) * 100) : 0;
-                    
-                    return (
-                      <div key={dept.departmentName} className="p-4 bg-muted/30 rounded border border-border">
-                        <h5 className="font-semibold text-foreground mb-3">{dept.departmentName}</h5>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">新規ANP達成率</p>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-lg font-bold ${
-                                anpAchievementRate >= 100 ? "text-success" : 
-                                anpAchievementRate >= 90 ? "text-warning" : "text-destructive"
-                              }`}>
-                                {anpAchievementRate}%
-                              </span>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">新規契約数達成率</p>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-lg font-bold ${
-                                contractAchievementRate >= 100 ? "text-success" : 
-                                contractAchievementRate >= 90 ? "text-warning" : "text-destructive"
-                              }`}>
-                                {contractAchievementRate}%
-                              </span>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">継続率達成率</p>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-lg font-bold ${
-                                continuationAchievementRate >= 100 ? "text-success" : 
-                                continuationAchievementRate >= 90 ? "text-warning" : "text-destructive"
-                              }`}>
-                                {continuationAchievementRate}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Theme Distribution Chart */}
+            {themeAnalysis && (
+              <ThemeDistributionChart
+                data={Object.entries(themeAnalysis.themeCount).map(([theme, count]) => ({
+                  theme,
+                  count,
+                  percentage: (count / themeAnalysis.totalHearings) * 100
+                })).sort((a, b) => b.count - a.count)}
+                onThemeClick={(theme) => {
+                  setSelectedTheme(theme);
+                  setSelectedMiddleTheme(undefined);
+                }}
+              />
+            )}
+
+            {/* Common Issues Summary */}
+            {themeAnalysis && (
+              <CommonIssuesSummary
+                issues={
+                  Object.entries(themeAnalysis.middleThemeCount)
+                    .flatMap(([majorTheme, middleThemes]) =>
+                      Object.entries(middleThemes).map(([middleTheme, count]) => {
+                        const sampleRecord = hearingHistory.find(
+                          h => h.major_theme === majorTheme && h.middle_theme === middleTheme
+                        );
+                        return {
+                          theme: majorTheme,
+                          middleTheme,
+                          count,
+                          percentage: (count / themeAnalysis.totalHearings) * 100,
+                          trend: "stable" as const,
+                          sampleContent: sampleRecord?.content || ""
+                        };
+                      })
+                    )
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 10)
+                }
+                onIssueClick={(theme, middleTheme) => {
+                  setSelectedTheme(theme);
+                  setSelectedMiddleTheme(middleTheme);
+                }}
+              />
+            )}
+
+            {/* Theme Timeline */}
+            <ThemeTimeline hearingHistory={hearingHistory} />
+
+            {/* Qualitative Insights */}
+            <QualitativeInsights hearingHistory={hearingHistory} />
+
+            {/* Theme Drill Down Modal */}
+            <ThemeDrillDownModal
+              open={selectedTheme !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setSelectedTheme(null);
+                  setSelectedMiddleTheme(undefined);
+                }
+              }}
+              theme={selectedTheme}
+              middleTheme={selectedMiddleTheme}
+              hearingHistory={hearingHistory}
+            />
           </TabsContent>
         </Tabs>
 

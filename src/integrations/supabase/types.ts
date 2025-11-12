@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      hearing_history: {
+        Row: {
+          agency_id: string
+          branch_id: string | null
+          content: string
+          created_at: string
+          date: string
+          department_id: string | null
+          detail_theme: string
+          id: string
+          major_theme: string
+          middle_theme: string
+          staff_name: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          branch_id?: string | null
+          content: string
+          created_at?: string
+          date: string
+          department_id?: string | null
+          detail_theme: string
+          id?: string
+          major_theme: string
+          middle_theme: string
+          staff_name: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          branch_id?: string | null
+          content?: string
+          created_at?: string
+          date?: string
+          department_id?: string | null
+          detail_theme?: string
+          id?: string
+          major_theme?: string
+          middle_theme?: string
+          staff_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       theme_distributions: {
         Row: {
           content: string
