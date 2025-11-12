@@ -36,7 +36,7 @@ const TopicPost = () => {
   };
 
   const handlePost = () => {
-    toast.success("会話トピックを投稿しました");
+    toast.success("代理店サポートテーマを配信しました");
     navigate("/");
   };
 
@@ -53,7 +53,7 @@ const TopicPost = () => {
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">会話トピック投稿</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">代理店サポートテーマ配信</h1>
           <p className="text-muted-foreground">営業担当者に配信する支援施策を作成</p>
         </div>
 

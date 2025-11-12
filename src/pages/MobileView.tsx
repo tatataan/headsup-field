@@ -53,7 +53,7 @@ const MobileView = () => {
             <div className="p-4 space-y-4 bg-background" style={{ minHeight: "600px" }}>
               <Tabs defaultValue="topics" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="topics">会話トピック</TabsTrigger>
+                  <TabsTrigger value="topics">代理店サポートテーマ</TabsTrigger>
                   <TabsTrigger value="overview">代理店概況</TabsTrigger>
                 </TabsList>
 

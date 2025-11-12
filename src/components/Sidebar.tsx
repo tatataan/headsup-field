@@ -30,7 +30,7 @@ export const Sidebar = () => {
           activeClassName="bg-sidebar-accent text-sidebar-foreground font-medium border border-accent/30"
         >
           <MessageSquarePlus className="w-5 h-5 group-hover:text-accent transition-colors" />
-          <span>会話トピック投稿</span>
+          <span>代理店サポートテーマ配信</span>
         </NavLink>
         
         <NavLink

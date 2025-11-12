@@ -129,7 +129,7 @@ const Dashboard = () => {
       <div className="p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">経営ダッシュボード</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">営業ダッシュボード</h1>
             <p className="text-sm text-muted-foreground">
               {new Date().toLocaleDateString('ja-JP', { 
                 year: 'numeric', 
