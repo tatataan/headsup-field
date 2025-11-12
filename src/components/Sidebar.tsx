@@ -16,21 +16,21 @@ export const Sidebar = () => {
       
       <nav className="flex-1 px-3 py-4">
         <NavLink
-          to="/"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl mb-2 text-sidebar-foreground/70 hover:bg-sidebar-accent transition-all duration-200 group"
-          activeClassName="bg-sidebar-accent text-sidebar-foreground font-medium border border-accent/30"
-        >
-          <LayoutDashboard className="w-5 h-5 group-hover:text-accent transition-colors" />
-          <span>ダッシュボード</span>
-        </NavLink>
-        
-        <NavLink
           to="/topics/new"
           className="flex items-center gap-3 px-4 py-3 rounded-xl mb-2 text-sidebar-foreground/70 hover:bg-sidebar-accent transition-all duration-200 group"
           activeClassName="bg-sidebar-accent text-sidebar-foreground font-medium border border-accent/30"
         >
           <MessageSquarePlus className="w-5 h-5 group-hover:text-accent transition-colors" />
           <span>代理店サポートテーマ配信</span>
+        </NavLink>
+        
+        <NavLink
+          to="/"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl mb-2 text-sidebar-foreground/70 hover:bg-sidebar-accent transition-all duration-200 group"
+          activeClassName="bg-sidebar-accent text-sidebar-foreground font-medium border border-accent/30"
+        >
+          <LayoutDashboard className="w-5 h-5 group-hover:text-accent transition-colors" />
+          <span>ダッシュボード</span>
         </NavLink>
         
         <NavLink
