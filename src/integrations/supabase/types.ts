@@ -14,7 +14,134 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      theme_distributions: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          detail_theme: string
+          distribution_end_date: string
+          distribution_start_date: string
+          id: string
+          is_required: boolean | null
+          major_theme: string
+          middle_theme: string
+          target_ids: Json | null
+          target_type: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          detail_theme: string
+          distribution_end_date: string
+          distribution_start_date: string
+          id?: string
+          is_required?: boolean | null
+          major_theme: string
+          middle_theme: string
+          target_ids?: Json | null
+          target_type: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          detail_theme?: string
+          distribution_end_date?: string
+          distribution_start_date?: string
+          id?: string
+          is_required?: boolean | null
+          major_theme?: string
+          middle_theme?: string
+          target_ids?: Json | null
+          target_type?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      theme_responses: {
+        Row: {
+          agency_id: string
+          branch_id: string | null
+          created_at: string | null
+          department_id: string | null
+          distribution_id: string
+          id: string
+          responded_at: string | null
+          response_note: string | null
+        }
+        Insert: {
+          agency_id: string
+          branch_id?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          distribution_id: string
+          id?: string
+          responded_at?: string | null
+          response_note?: string | null
+        }
+        Update: {
+          agency_id?: string
+          branch_id?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          distribution_id?: string
+          id?: string
+          responded_at?: string | null
+          response_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_responses_distribution_id_fkey"
+            columns: ["distribution_id"]
+            isOneToOne: false
+            referencedRelation: "theme_distributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      themes: {
+        Row: {
+          created_at: string | null
+          detail_theme: string
+          id: string
+          major_theme: string
+          manager_script: string | null
+          middle_theme: string
+          recruiter_script: string | null
+          sample_data: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          detail_theme: string
+          id?: string
+          major_theme: string
+          manager_script?: string | null
+          middle_theme: string
+          recruiter_script?: string | null
+          sample_data?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          detail_theme?: string
+          id?: string
+          major_theme?: string
+          manager_script?: string | null
+          middle_theme?: string
+          recruiter_script?: string | null
+          sample_data?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
