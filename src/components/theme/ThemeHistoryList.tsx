@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Info, TrendingUp } from "lucide-react";
+import { Info, TrendingUp, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import {
@@ -142,15 +142,38 @@ export const ThemeHistoryList = () => {
                       </TooltipProvider>
                     </div>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/topics/history/${dist.id}/drilldown`)}
-                      className="ml-auto"
-                    >
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      割合ドリルダウン
-                    </Button>
+                    <div className="flex gap-2 ml-auto">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // Functionality will be added in Phase 3
+                              }}
+                            >
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              データシミュレート
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">
+                              ダミーデータを生成して対応済割合をシミュレートします（既存データは削除されます）
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/topics/history/${dist.id}/drilldown`)}
+                      >
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        割合ドリルダウン
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
