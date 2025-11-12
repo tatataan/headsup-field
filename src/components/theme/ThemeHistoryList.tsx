@@ -252,11 +252,10 @@ export const ThemeHistoryList = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                // Functionality will be added in Phase 3
-                              }}
+                              onClick={() => simulateMutation.mutate(dist)}
+                              disabled={simulateMutation.isPending}
                             >
-                              <RefreshCw className="w-4 h-4 mr-2" />
+                              <RefreshCw className={`w-4 h-4 mr-2 ${simulateMutation.isPending ? 'animate-spin' : ''}`} />
                               データシミュレート
                             </Button>
                           </TooltipTrigger>
