@@ -281,7 +281,7 @@ export const ThemeCreateForm = () => {
           className="min-w-[160px]"
         >
           <Send className="w-4 h-4 mr-2" />
-          投稿する
+          配信
         </Button>
       </div>
     </Card>
