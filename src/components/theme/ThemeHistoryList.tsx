@@ -27,6 +27,8 @@ interface ThemeDistribution {
   distribution_end_date: string;
   is_required: boolean;
   created_at: string;
+  target_type: string;
+  target_ids: string[] | null;
 }
 
 // Helper function to generate dummy responses
@@ -157,20 +159,43 @@ export const ThemeHistoryList = () => {
     },
   });
 
-  const getCompletionRate = (distributionId: string) => {
+  const getCompletionRate = (distribution: ThemeDistribution) => {
     if (!responsesData) return 0;
     
     // Count unique agencies that responded
     const responses = responsesData.filter(
-      (r) => r.distribution_id === distributionId
+      (r) => r.distribution_id === distribution.id
     );
     const uniqueAgencies = new Set(responses.map((r) => r.agency_id));
     
-    // For demo purposes, assume total target is 100 agencies
-    // In production, calculate based on target_ids
-    const totalTargets = 100;
-    const rate = (uniqueAgencies.size / totalTargets) * 100;
+    // Calculate actual total targets based on target_type
+    let totalTargets = 0;
     
+    if (distribution.target_type === "all") {
+      // Sum all agencies from all branches
+      totalTargets = branches.reduce((sum, branch) => sum + branch.agentCount, 0);
+    } else if (distribution.target_type === "department" && distribution.target_ids) {
+      // Sum agencies from specific departments
+      const targetDeptIds = distribution.target_ids;
+      branches.forEach(branch => {
+        const dept = getDepartmentByBranchId(branch.id);
+        if (dept && targetDeptIds.includes(dept.id)) {
+          totalTargets += branch.agentCount;
+        }
+      });
+    } else if (distribution.target_type === "branch" && distribution.target_ids) {
+      // Sum agencies from specific branches
+      const targetBranchIds = distribution.target_ids;
+      branches.forEach(branch => {
+        if (targetBranchIds.includes(branch.id)) {
+          totalTargets += branch.agentCount;
+        }
+      });
+    }
+    
+    if (totalTargets === 0) return 0;
+    
+    const rate = (uniqueAgencies.size / totalTargets) * 100;
     return Math.round(rate);
   };
 
@@ -193,7 +218,7 @@ export const ThemeHistoryList = () => {
   return (
     <div className="space-y-4">
       {distributions.map((dist) => {
-        const completionRate = dist.is_required ? getCompletionRate(dist.id) : null;
+        const completionRate = dist.is_required ? getCompletionRate(dist) : null;
 
         return (
           <Card key={dist.id} className="p-6">
