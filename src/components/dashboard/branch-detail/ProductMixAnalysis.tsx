@@ -48,7 +48,7 @@ export const ProductMixAnalysis = ({ products }: ProductMixAnalysisProps) => {
             ? `成長性の高い${products.find(p => p.anp < p.previousMonthAnp * 1.1 && p.productName !== topProduct.productName)?.productName || "他商品"}の販売強化により、ポートフォリオの分散を図ることを推奨します`
             : "現在のバランスを維持しつつ、各商品カテゴリでの深掘りを進めてください"
         }
-        status={concentrationRisk > 60 ? "warning" : growthProducts.length >= 3 ? "positive" : "neutral"}
+        status="neutral"
       />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

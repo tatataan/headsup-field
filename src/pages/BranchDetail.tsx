@@ -84,13 +84,7 @@ const BranchDetail = () => {
                 ? "目標達成中です。この調子で継続しましょう。"
                 : "目標未達成です。営業活動の強化を推奨します。"
             }
-            status={
-              data.kpi.newANP.achievementRate >= 100 
-                ? "positive" 
-                : data.kpi.newANP.achievementRate >= 90 
-                ? "warning" 
-                : "warning"
-            }
+            status="neutral"
           />
         </div>
 

@@ -45,11 +45,7 @@ export const CustomerSegmentAnalysis = ({ segments }: CustomerSegmentAnalysisPro
             ? "顧客ロイヤルティプログラムの導入や定期的なフォローアップにより、長期顧客の育成を強化してください"
             : "バランスの取れた顧客基盤を活かし、セグメント別のパーソナライズドサービスを展開してください"
         }
-        status={
-          (longTermCustomers && longTermCustomers.percentage > 35) ? "positive" 
-          : dominantAge.percentage > 50 ? "warning" 
-          : "neutral"
-        }
+        status="neutral"
       />
       
       {/* 年齢層別分析 */}

@@ -53,7 +53,7 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
             ? `${topChannel.channel}チャネルの成功パターンを分析し、他チャネルへの横展開を推奨します`
             : "現在の成長トレンドを維持するため、顧客満足度調査を実施し、強みをさらに強化してください"
         }
-        status={avgCancellationRate > 7 ? "warning" : netChange > 0 && newChange > 10 ? "positive" : "neutral"}
+        status="neutral"
       />
       
       {/* サマリーカード */}
@@ -176,6 +176,36 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* 獲得チャネル別AI分析 */}
+      <BranchInsightCard
+        title="チャネル獲得分析"
+        insights={(() => {
+          const sortedChannels = [...breakdown.acquisitionChannels].sort((a, b) => b.count - a.count);
+          const topChannel = sortedChannels[0];
+          const secondChannel = sortedChannels[1];
+          const top2Percentage = topChannel.percentage + secondChannel.percentage;
+          const concentration = topChannel.percentage > 50 ? "特定チャネルへの依存度が高い" : "バランス良好";
+          
+          const growthChannel = breakdown.acquisitionChannels.reduce((max, c) => 
+            c.count > max.count ? c : max
+          );
+
+          return [
+            `${topChannel.channel}が最も効果的で、全体の${topChannel.percentage}%を占めています`,
+            `上位2チャネル（${topChannel.channel}・${secondChannel.channel}）で${top2Percentage.toFixed(0)}%をカバーしており、${concentration}状態です`,
+            `${growthChannel.channel}チャネルが現在最も高い獲得実績を記録しています`
+          ];
+        })()}
+        recommendation={
+          topChannel.percentage > 50
+            ? "特定チャネルへの依存度が高いため、他チャネルの強化でリスク分散を推奨します。成功パターンを他チャネルに横展開することで、より安定した獲得基盤を構築できます"
+            : topChannel.percentage < 30
+            ? "チャネルバランスは良好です。現在のチャネルバランスを維持しつつ、各チャネルの質的改善（コンバージョン率向上、顧客単価アップ）に注力してください"
+            : "成長チャネルへのリソース集中と、低調チャネルの改善施策を並行実施してください。データに基づいた最適化でROIを最大化できます"
+        }
+        status="neutral"
+      />
 
       {/* 獲得チャネル別内訳 */}
       <div className="space-y-4">
