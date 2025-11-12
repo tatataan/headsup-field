@@ -14,20 +14,23 @@ const randomFloat = (min: number, max: number, decimals: number = 2): number => 
 
 // 期間文字列を生成
 const generatePeriodString = (periodType: PeriodType, index: number): string => {
-  const currentYear = 2024;
-  const currentMonth = 11; // 11月
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 0-indexed to 1-indexed (1-12)
   
   switch (periodType) {
     case 'monthly':
-      const month = ((currentMonth - index - 1 + 12) % 12) + 1;
-      const year = currentYear - Math.floor((currentMonth - index - 1) / 12);
-      return `${year}年${month}月`;
+      // Subtract index months from current date
+      const targetDate = new Date(currentYear, currentMonth - 1 - index, 1);
+      return `${targetDate.getFullYear()}年${targetDate.getMonth() + 1}月`;
     
     case 'quarterly':
       const currentQuarter = Math.ceil(currentMonth / 3);
-      const quarter = ((currentQuarter - index - 1 + 4) % 4) + 1;
-      const qYear = currentYear - Math.floor((currentQuarter - index - 1) / 4);
-      return `${qYear}年Q${quarter}`;
+      const totalQuartersAgo = index;
+      const targetQuarterNum = currentQuarter - totalQuartersAgo;
+      const targetYear = currentYear + Math.floor((targetQuarterNum - 1) / 4);
+      const targetQuarter = ((targetQuarterNum - 1 + 400) % 4) + 1; // +400 to handle negative numbers
+      return `${targetYear}年Q${targetQuarter}`;
     
     case 'yearly':
       return `${currentYear - index}年度`;
