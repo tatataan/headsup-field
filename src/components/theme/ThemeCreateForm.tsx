@@ -108,22 +108,19 @@ export const ThemeCreateForm = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
-        {/* Theme Classification - Outside main card */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">テーマ分類</h3>
-          <ThemeClassificationSelector
-            majorTheme={majorTheme}
-            middleTheme={middleTheme}
-            detailTheme={detailTheme}
-            onMajorThemeChange={setMajorTheme}
-            onMiddleThemeChange={setMiddleTheme}
-            onDetailThemeChange={setDetailTheme}
-          />
-        </Card>
-
-        {/* Main Content Card */}
-        <Card className="p-6">
+        {/* Step 1: Main Content Card */}
+        <Card className="p-6 border-primary/20">
           <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">1</span>
+                投稿内容を作成
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                営業担当者に伝えたい内容を入力してください
+              </p>
+            </div>
+
             <div>
               <Label htmlFor="title">タイトル</Label>
               <Input
@@ -166,6 +163,27 @@ export const ThemeCreateForm = () => {
             </div>
           </div>
         </Card>
+
+        {/* Step 2: Theme Classification Card */}
+        <Card className="p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">2</span>
+              テーマ分類を選択
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              作成した内容に適したテーマを選択してください
+            </p>
+          </div>
+          <ThemeClassificationSelector
+            majorTheme={majorTheme}
+            middleTheme={middleTheme}
+            detailTheme={detailTheme}
+            onMajorThemeChange={setMajorTheme}
+            onMiddleThemeChange={setMiddleTheme}
+            onDetailThemeChange={setDetailTheme}
+          />
+        </Card>
       </div>
 
       <div className="space-y-6">
@@ -177,6 +195,15 @@ export const ThemeCreateForm = () => {
             endDate={endDate}
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
+          />
+        </Card>
+
+        {/* Target Selection Card */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">配信対象</h3>
+          <OrganizationTargetSelector
+            selectedTargets={selectedTargets}
+            onChange={setSelectedTargets}
           />
         </Card>
 
@@ -197,15 +224,6 @@ export const ThemeCreateForm = () => {
               onCheckedChange={setIsRequired}
             />
           </div>
-        </Card>
-
-        {/* Target Selection Card */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">配信対象</h3>
-          <OrganizationTargetSelector
-            selectedTargets={selectedTargets}
-            onChange={setSelectedTargets}
-          />
         </Card>
       </div>
     </div>
