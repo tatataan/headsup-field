@@ -15,6 +15,8 @@ import { departments } from "@/data/departments";
 import { getBranchesByDepartmentId } from "@/data/branches";
 import { generatePeriodData } from "@/data/sample-data-generator";
 import { AchievementLegend } from "@/components/ui/achievement-legend";
+import { EnhancedKPICards } from "@/components/dashboard/EnhancedKPICards";
+import { generateHistoricalTrendData } from "@/data/sample-data-generator";
 
 const Dashboard = () => {
   const [selectedKPI, setSelectedKPI] = useState<{
@@ -73,6 +75,17 @@ const Dashboard = () => {
       }
     };
   }, [periodType]);
+
+  // 全社の履歴トレンドデータ
+  const companyHistoricalData = useMemo(() => {
+    const allBranches = departments.flatMap(dept => getBranchesByDepartmentId(dept.id));
+    
+    return {
+      monthly: generateHistoricalTrendData(allBranches, 'monthly', 12),
+      quarterly: generateHistoricalTrendData(allBranches, 'quarterly', 8),
+      yearly: generateHistoricalTrendData(allBranches, 'yearly', 5)
+    };
+  }, []);
 
   // 統括部別グラフデータ
   const departmentChartData = useMemo(() => {
@@ -159,57 +172,29 @@ const Dashboard = () => {
 
           <TabsContent value="performance" className="space-y-8">
               {dashboardConfig.showKPIs && (
-                <>
-                  {/* 全社KPIカード */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <KPICard
-                      title={`全社新規ANP（${getPeriodLabel()}）`}
-                      value={`¥${(companyKPI.newANP.actual / 1000000).toFixed(0)}M`}
-                      change=""
-                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : companyKPI.newANP.achievementRate >= 90 ? "neutral" : "negative"}
-                      onClick={() => {}}
-                    />
-                    <KPICard
-                      title={`全社新規契約数（${getPeriodLabel()}）`}
-                      value={`${companyKPI.newContractCount.actual.toLocaleString()}件`}
-                      change=""
-                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : companyKPI.newContractCount.achievementRate >= 90 ? "neutral" : "negative"}
-                      onClick={() => {}}
-                    />
-                    <KPICard
-                      title={`全社継続率（${getPeriodLabel()}）`}
-                      value={`${companyKPI.continuationRate.actual.toFixed(1)}%`}
-                      change=""
-                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : companyKPI.continuationRate.achievementRate >= 90 ? "neutral" : "negative"}
-                      onClick={() => {}}
-                    />
-                  </div>
-
-                  {/* 達成率表示 */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <KPICard
-                      title="新規ANP達成率"
-                      value={`${companyKPI.newANP.achievementRate.toFixed(1)}%`}
-                      change=""
-                      changeType={companyKPI.newANP.achievementRate >= 100 ? "positive" : companyKPI.newANP.achievementRate >= 90 ? "neutral" : "negative"}
-                      applyColorToValue={true}
-                    />
-                    <KPICard
-                      title="新規契約数達成率"
-                      value={`${companyKPI.newContractCount.achievementRate.toFixed(1)}%`}
-                      change=""
-                      changeType={companyKPI.newContractCount.achievementRate >= 100 ? "positive" : companyKPI.newContractCount.achievementRate >= 90 ? "neutral" : "negative"}
-                      applyColorToValue={true}
-                    />
-                    <KPICard
-                      title="継続率達成率"
-                      value={`${companyKPI.continuationRate.achievementRate.toFixed(1)}%`}
-                      change=""
-                      changeType={companyKPI.continuationRate.achievementRate >= 100 ? "positive" : companyKPI.continuationRate.achievementRate >= 90 ? "neutral" : "negative"}
-                      applyColorToValue={true}
-                    />
-                  </div>
-                </>
+                <EnhancedKPICards
+                  kpis={[
+                    {
+                      title: `全社新規ANP（${getPeriodLabel()}）`,
+                      value: `¥${(companyKPI.newANP.actual / 1000000).toFixed(0)}M`,
+                      achievementRate: companyKPI.newANP.achievementRate,
+                      changeType: companyKPI.newANP.achievementRate >= 100 ? "positive" : companyKPI.newANP.achievementRate >= 90 ? "neutral" : "negative"
+                    },
+                    {
+                      title: `全社新規契約数（${getPeriodLabel()}）`,
+                      value: `${companyKPI.newContractCount.actual.toLocaleString()}件`,
+                      achievementRate: companyKPI.newContractCount.achievementRate,
+                      changeType: companyKPI.newContractCount.achievementRate >= 100 ? "positive" : companyKPI.newContractCount.achievementRate >= 90 ? "neutral" : "negative"
+                    },
+                    {
+                      title: `全社継続率（${getPeriodLabel()}）`,
+                      value: `${companyKPI.continuationRate.actual.toFixed(1)}%`,
+                      achievementRate: companyKPI.continuationRate.achievementRate,
+                      changeType: companyKPI.continuationRate.achievementRate >= 100 ? "positive" : companyKPI.continuationRate.achievementRate >= 90 ? "neutral" : "negative"
+                    }
+                  ]}
+                  historicalData={companyHistoricalData}
+                />
               )}
 
               {/* 統括部別グラフ */}

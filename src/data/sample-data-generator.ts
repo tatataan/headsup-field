@@ -304,6 +304,35 @@ export const generateCustomerSegments = (): CustomerSegmentData => {
   };
 };
 
+// 履歴トレンドデータを生成（複数の期間タイプに対応）
+export const generateHistoricalTrendData = (
+  branches: Branch[],
+  periodType: PeriodType,
+  count: number = 12
+): { period: string; anp: number; contractCount: number; continuationRate: number }[] => {
+  return Array.from({ length: count }, (_, i) => {
+    let totalANP = 0;
+    let totalContracts = 0;
+    let totalContinuationRate = 0;
+    
+    branches.forEach(branch => {
+      const periodData = generatePeriodData(branch, periodType, i);
+      totalANP += periodData.metrics.newANP.actual;
+      totalContracts += periodData.metrics.newContractCount.actual;
+      totalContinuationRate += periodData.metrics.continuationRate.actual;
+    });
+    
+    const avgContinuationRate = branches.length > 0 ? totalContinuationRate / branches.length : 0;
+    
+    return {
+      period: generatePeriodString(periodType, i),
+      anp: totalANP,
+      contractCount: totalContracts,
+      continuationRate: avgContinuationRate
+    };
+  }).reverse();
+};
+
 // 支社詳細データを生成
 export const generateBranchDetailData = (
   branch: Branch,
