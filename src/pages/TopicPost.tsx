@@ -1,6 +1,4 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeCreateForm } from "@/components/theme/ThemeCreateForm";
 import { ThemeHistoryList } from "@/components/theme/ThemeHistoryList";
@@ -13,15 +11,6 @@ const TopicPost = () => {
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/")}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          ダッシュボードに戻る
-        </Button>
-
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
             代理店サポートテーマ配信
