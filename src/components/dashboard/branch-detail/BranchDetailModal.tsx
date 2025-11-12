@@ -24,6 +24,13 @@ interface BranchDetailModalProps {
 
 export const BranchDetailModal = ({ open, onOpenChange, data }: BranchDetailModalProps) => {
   const [periodType, setPeriodType] = useState<PeriodType>('monthly');
+  
+  const branchHistoricalData = {
+    monthly: data.monthlyData,
+    quarterly: [] as { period: string; anp: number; contractCount: number; continuationRate: number }[],
+    yearly: [] as { period: string; anp: number; contractCount: number; continuationRate: number }[]
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh]">
@@ -36,7 +43,7 @@ export const BranchDetailModal = ({ open, onOpenChange, data }: BranchDetailModa
         <ScrollArea className="h-[calc(90vh-100px)] pr-4">
           <div className="space-y-6">
             {/* KPIカード */}
-            <BranchKPICards kpi={data.kpi} monthlyData={data.monthlyData} />
+            <BranchKPICards kpi={data.kpi} historicalData={branchHistoricalData} />
 
             {/* ドリルダウンセクション */}
             <Accordion type="multiple" className="w-full" defaultValue={["agents"]}>

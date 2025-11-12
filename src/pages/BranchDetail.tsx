@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { getBranchById } from '@/data/branches';
 import { departments } from '@/data/departments';
 import { PeriodType } from '@/types/kpi';
 import { PeriodSelector } from '@/components/dashboard/PeriodSelector';
-import { generateBranchDetailData } from '@/data/sample-data-generator';
+import { generateBranchDetailData, generateHistoricalTrendData } from '@/data/sample-data-generator';
 import { BranchKPICards } from '@/components/dashboard/branch-detail/BranchKPICards';
 import { DetailTrendChart } from '@/components/dashboard/branch-detail/DetailTrendChart';
 import { AgentRankingTable } from '@/components/dashboard/branch-detail/AgentRankingTable';
@@ -28,6 +28,16 @@ const BranchDetail = () => {
   const department = departments.find(dept => 
     branch && dept.branchIds.includes(branch.id)
   );
+
+  // Generate historical data for all period types
+  const branchHistoricalData = useMemo(() => {
+    if (!branch) return { monthly: [], quarterly: [], yearly: [] };
+    return {
+      monthly: data?.monthlyData || [],
+      quarterly: generateHistoricalTrendData([branch], 'quarterly', 8),
+      yearly: generateHistoricalTrendData([branch], 'yearly', 5)
+    };
+  }, [branch, data?.monthlyData]);
 
   if (!branch || !data) {
     return (
@@ -68,7 +78,7 @@ const BranchDetail = () => {
         </div>
 
         {/* KPIカード */}
-        <BranchKPICards kpi={data.kpi} monthlyData={data.monthlyData} />
+        <BranchKPICards kpi={data.kpi} historicalData={branchHistoricalData} />
 
         {/* AIインサイトカード */}
         <div className="mt-6">

@@ -3,11 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DetailTrendChartProps {
   title: string;
-  data: { month: string; anp: number; contractCount: number; continuationRate: number }[];
+  data: Array<({ month: string } | { period: string }) & { anp: number; contractCount: number; continuationRate: number }>;
   dataKey: string;
 }
 
 export const DetailTrendChart = ({ title, data, dataKey }: DetailTrendChartProps) => {
+  // Determine if data uses 'month' or 'period' for x-axis
+  const xAxisKey = data.length > 0 && 'period' in data[0] ? 'period' : 'month';
   // Y軸用のフォーマット関数
   const formatYAxisValue = (value: number) => {
     if (dataKey === "anp") {
@@ -40,7 +42,7 @@ export const DetailTrendChart = ({ title, data, dataKey }: DetailTrendChartProps
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis
-                dataKey="month"
+                dataKey={xAxisKey}
                 stroke="hsl(var(--muted-foreground))"
                 tick={{ fill: "hsl(var(--muted-foreground))" }}
               />
