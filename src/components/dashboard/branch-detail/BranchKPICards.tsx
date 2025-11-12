@@ -7,7 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 
 interface BranchKPICardsProps {
   kpi: BranchKPI;
-  monthlyData: { month: string; anp: number; contractCount: number }[];
+  monthlyData: { month: string; anp: number; contractCount: number; continuationRate: number }[];
 }
 
 export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
@@ -40,7 +40,7 @@ export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
       value: `${kpi.continuationRate.actual}%`,
       change: continuationChange,
       label: "達成率",
-      dataKey: "contractCount",
+      dataKey: "continuationRate",
     },
     {
       id: "agents",

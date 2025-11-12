@@ -3,13 +3,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DetailTrendChartProps {
   title: string;
-  data: { month: string; anp: number; contractCount: number }[];
+  data: { month: string; anp: number; contractCount: number; continuationRate: number }[];
   dataKey: string;
 }
 
 export const DetailTrendChart = ({ title, data, dataKey }: DetailTrendChartProps) => {
-  const formatValue = (value: number) => {
-    if (dataKey === "anp") return `¥${value}M`;
+  // Y軸用のフォーマット関数
+  const formatYAxisValue = (value: number) => {
+    if (dataKey === "anp") {
+      return `¥${(value / 1000000).toFixed(0)}M`;
+    } else if (dataKey === "continuationRate") {
+      return `${value}%`;
+    } else {
+      return value.toString();
+    }
+  };
+
+  // Tooltip用のフォーマット関数
+  const formatTooltipValue = (value: number) => {
+    if (dataKey === "anp") return `¥${(value / 1000000).toFixed(1)}M`;
+    if (dataKey === "continuationRate") return `${value}%`;
     return `${value.toLocaleString()}件`;
   };
 
@@ -34,6 +47,7 @@ export const DetailTrendChart = ({ title, data, dataKey }: DetailTrendChartProps
               <YAxis
                 stroke="hsl(var(--muted-foreground))"
                 tick={{ fill: "hsl(var(--muted-foreground))" }}
+                tickFormatter={formatYAxisValue}
               />
               <Tooltip
                 contentStyle={{
@@ -42,7 +56,7 @@ export const DetailTrendChart = ({ title, data, dataKey }: DetailTrendChartProps
                   borderRadius: "var(--radius)",
                   color: "hsl(var(--popover-foreground))",
                 }}
-                formatter={(value: number) => [formatValue(value), title]}
+                formatter={(value: number) => [formatTooltipValue(value), title]}
               />
               <Legend />
               <Line

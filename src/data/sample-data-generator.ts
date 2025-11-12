@@ -329,7 +329,8 @@ export const generateBranchDetailData = (
     monthlyData: historicalData.map(h => ({
       month: h.period,
       anp: h.newANP,
-      contractCount: h.newContractCount
+      contractCount: h.newContractCount,
+      continuationRate: h.continuationRate
     }))
   };
 };

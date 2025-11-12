@@ -87,5 +87,5 @@ export interface BranchDetailData {
   productMix: ProductMixData[];
   contractBreakdown: ContractBreakdownData;
   customerSegments: CustomerSegmentData;
-  monthlyData: { month: string; anp: number; contractCount: number }[];
+  monthlyData: { month: string; anp: number; contractCount: number; continuationRate: number }[];
 }

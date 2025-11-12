@@ -53,12 +53,12 @@ export const AgencyList = () => {
     // 月次データ
     const contractCount = kpi.newContractCount.actual;
     const monthlyData = [
-      { month: "10月", anp: branch.anp * 0.85, contractCount: contractCount * 0.85 },
-      { month: "11月", anp: branch.anp * 0.88, contractCount: contractCount * 0.88 },
-      { month: "12月", anp: branch.anp * 0.91, contractCount: contractCount * 0.91 },
-      { month: "1月", anp: branch.anp * 0.94, contractCount: contractCount * 0.94 },
-      { month: "2月", anp: branch.anp * 0.97, contractCount: contractCount * 0.97 },
-      { month: "3月", anp: branch.anp, contractCount: contractCount },
+      { month: "10月", anp: branch.anp * 0.85, contractCount: contractCount * 0.85, continuationRate: 95.2 },
+      { month: "11月", anp: branch.anp * 0.88, contractCount: contractCount * 0.88, continuationRate: 95.5 },
+      { month: "12月", anp: branch.anp * 0.91, contractCount: contractCount * 0.91, continuationRate: 96.1 },
+      { month: "1月", anp: branch.anp * 0.94, contractCount: contractCount * 0.94, continuationRate: 96.3 },
+      { month: "2月", anp: branch.anp * 0.97, contractCount: contractCount * 0.97, continuationRate: 96.8 },
+      { month: "3月", anp: branch.anp, contractCount: contractCount, continuationRate: kpi.continuationRate.actual },
     ];
 
     // エージェントデータ

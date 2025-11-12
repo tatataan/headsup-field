@@ -70,28 +70,8 @@ const BranchDetail = () => {
         {/* KPIカード */}
         <BranchKPICards kpi={data.kpi} monthlyData={data.monthlyData} />
 
-        {/* コンテンツエリア */}
-        <div className="space-y-6 mt-6">
-          {/* トレンドチャート */}
-          <DetailTrendChart 
-            title="パフォーマンス推移"
-            data={data.monthlyData}
-            dataKey="anp"
-          />
-
-          {/* 代理店営業社員別実績ランキング */}
-          <AgentRankingTable agents={data.agents} />
-
-          {/* 商品別構成分析 */}
-          <ProductMixAnalysis products={data.productMix} />
-
-          {/* 新規・解約・継続の内訳 */}
-          <ContractBreakdownAnalysis breakdown={data.contractBreakdown} />
-
-          {/* 顧客セグメント別分析 */}
-          <CustomerSegmentAnalysis segments={data.customerSegments} />
-
-          {/* インサイトカード */}
+        {/* AIインサイトカード */}
+        <div className="mt-6">
           <BranchInsightCard 
             title="AIインサイト"
             insights={[
@@ -112,6 +92,21 @@ const BranchDetail = () => {
                 : "warning"
             }
           />
+        </div>
+
+        {/* コンテンツエリア */}
+        <div className="space-y-6 mt-6">
+          {/* 代理店営業社員別実績ランキング */}
+          <AgentRankingTable agents={data.agents} />
+
+          {/* 商品別構成分析 */}
+          <ProductMixAnalysis products={data.productMix} />
+
+          {/* 新規・解約・継続の内訳 */}
+          <ContractBreakdownAnalysis breakdown={data.contractBreakdown} />
+
+          {/* 顧客セグメント別分析 */}
+          <CustomerSegmentAnalysis segments={data.customerSegments} />
         </div>
       </div>
     </div>
