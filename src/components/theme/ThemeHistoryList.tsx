@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Info, TrendingUp, RefreshCw } from "lucide-react";
+import { Info, TrendingUp, RefreshCw, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import {
@@ -90,6 +91,7 @@ export const ThemeHistoryList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [devToolsOpen, setDevToolsOpen] = useState(false);
 
   const { data: distributions, isLoading } = useQuery({
     queryKey: ["theme-distributions"],
@@ -217,6 +219,72 @@ export const ThemeHistoryList = () => {
 
   return (
     <div className="space-y-4">
+      {/* Development Tools Panel */}
+      <Card className="border-dashed border-2 border-amber-500 bg-amber-50/50 dark:bg-amber-950/20">
+        <div className="p-4">
+          <button
+            onClick={() => setDevToolsOpen(!devToolsOpen)}
+            className="flex items-center justify-between w-full text-left"
+          >
+            <div className="flex items-center gap-2 flex-wrap">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+              <span className="font-mono font-bold text-amber-900 dark:text-amber-100">
+                DEV TOOLS - 開発用ツール
+              </span>
+              <Badge 
+                variant="outline" 
+                className="border-amber-600 text-amber-700 dark:border-amber-500 dark:text-amber-400"
+              >
+                本番環境では非表示
+              </Badge>
+            </div>
+            {devToolsOpen ? (
+              <ChevronUp className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+            )}
+          </button>
+          
+          {devToolsOpen && (
+            <div className="mt-4 space-y-3 border-t border-amber-300 dark:border-amber-700 pt-4">
+              <p className="text-sm text-amber-700 dark:text-amber-300 font-mono">
+                ※このパネルはダミーデータ生成用です。各テーマの対応データをシミュレートできます。
+              </p>
+              
+              {distributions
+                .filter(d => d.is_required)
+                .map(dist => {
+                  const completionRate = getCompletionRate(dist);
+                  return (
+                    <div 
+                      key={dist.id} 
+                      className="flex items-center justify-between p-3 bg-background rounded border border-amber-200 dark:border-amber-800"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{dist.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          現在の対応率: {completionRate}%
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => simulateMutation.mutate(dist)}
+                        disabled={simulateMutation.isPending}
+                        className="border-amber-500 text-amber-700 hover:bg-amber-50 dark:border-amber-600 dark:text-amber-400 dark:hover:bg-amber-950/50"
+                      >
+                        <RefreshCw className={`w-4 h-4 mr-2 ${simulateMutation.isPending ? 'animate-spin' : ''}`} />
+                        シミュレート
+                      </Button>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Theme Distribution Cards */}
       {distributions.map((dist) => {
         const completionRate = dist.is_required ? getCompletionRate(dist) : null;
 
@@ -270,28 +338,7 @@ export const ThemeHistoryList = () => {
                       </TooltipProvider>
                     </div>
 
-                    <div className="flex gap-2 ml-auto">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => simulateMutation.mutate(dist)}
-                              disabled={simulateMutation.isPending}
-                            >
-                              <RefreshCw className={`w-4 h-4 mr-2 ${simulateMutation.isPending ? 'animate-spin' : ''}`} />
-                              データシミュレート
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">
-                              ダミーデータを生成して対応済割合をシミュレートします（既存データは削除されます）
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
+                    <div className="ml-auto">
                       <Button
                         variant="outline"
                         size="sm"
