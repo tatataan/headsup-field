@@ -22,6 +22,7 @@ export const PercentageBadge = ({ value, className }: PercentageBadgeProps) => {
     >
       {isPositive && <TrendingUp className="w-3 h-3" />}
       {isNegative && <TrendingDown className="w-3 h-3" />}
+      <span>{isPositive ? "+" : ""}{value.toFixed(1)}%</span>
     </div>
   );
 };
