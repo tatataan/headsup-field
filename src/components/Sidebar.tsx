@@ -1,7 +1,11 @@
-import { LayoutDashboard, MessageSquarePlus, Smartphone, Sparkles } from "lucide-react";
+import { LayoutDashboard, MessageSquarePlus, Smartphone, Sparkles, LogOut } from "lucide-react";
 import { NavLink } from "./NavLink";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 export const Sidebar = () => {
+  const { signOut } = useAuth();
+
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       <div className="p-6 border-b border-sidebar-border">
@@ -43,16 +47,25 @@ export const Sidebar = () => {
         </NavLink>
       </nav>
       
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border space-y-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-br from-accent to-chart-2 rounded-full flex items-center justify-center text-xs font-bold text-accent-foreground">
-            木
+            管
           </div>
-          <div>
-            <div className="text-xs font-medium text-sidebar-foreground">木村本部長</div>
+          <div className="flex-1">
+            <div className="text-xs font-medium text-sidebar-foreground">管理者</div>
             <div className="text-[10px] text-muted-foreground">本部管理者</div>
           </div>
         </div>
+        <Button
+          onClick={signOut}
+          variant="outline"
+          size="sm"
+          className="w-full text-xs"
+        >
+          <LogOut className="w-3 h-3 mr-2" />
+          ログアウト
+        </Button>
       </div>
     </aside>
   );
