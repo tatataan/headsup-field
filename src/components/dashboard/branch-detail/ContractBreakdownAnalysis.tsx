@@ -53,7 +53,7 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
             ? `${topChannel.channel}チャネルの成功パターンを分析し、他チャネルへの横展開を推奨します`
             : "現在の成長トレンドを維持するため、顧客満足度調査を実施し、強みをさらに強化してください"
         }
-        status="neutral"
+        status="warning"
       />
       
       {/* サマリーカード */}
@@ -204,7 +204,7 @@ export const ContractBreakdownAnalysis = ({ breakdown }: ContractBreakdownAnalys
             ? "チャネルバランスは良好です。現在のチャネルバランスを維持しつつ、各チャネルの質的改善（コンバージョン率向上、顧客単価アップ）に注力してください"
             : "成長チャネルへのリソース集中と、低調チャネルの改善施策を並行実施してください。データに基づいた最適化でROIを最大化できます"
         }
-        status="neutral"
+        status="warning"
       />
 
       {/* 獲得チャネル別内訳 */}

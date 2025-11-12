@@ -4,6 +4,8 @@ import { TrendingUp, TrendingDown, Users } from "lucide-react";
 import { useState } from "react";
 import { DetailTrendChart } from "./DetailTrendChart";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { PeriodSelector } from "../PeriodSelector";
+import { PeriodType } from "@/types/kpi";
 
 interface BranchKPICardsProps {
   kpi: BranchKPI;
@@ -12,6 +14,7 @@ interface BranchKPICardsProps {
 
 export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
   const [selectedKPI, setSelectedKPI] = useState<string | null>(null);
+  const [trendPeriod, setTrendPeriod] = useState<PeriodType>('monthly');
 
   const anpChange = kpi.newANP.achievementRate - 100;
   const contractChange = kpi.newContractCount.achievementRate - 100;
@@ -102,6 +105,12 @@ export const BranchKPICards = ({ kpi, monthlyData }: BranchKPICardsProps) => {
         <Collapsible open={!!selectedKPI}>
           <CollapsibleContent>
             <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">
+                  {kpiCards.find((c) => c.id === selectedKPI)?.title || ""} - 詳細推移
+                </h3>
+                <PeriodSelector value={trendPeriod} onChange={setTrendPeriod} />
+              </div>
               <DetailTrendChart
                 title={kpiCards.find((c) => c.id === selectedKPI)?.title || ""}
                 data={monthlyData}

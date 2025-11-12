@@ -13,6 +13,8 @@ import { BranchANPChart } from "@/components/dashboard/department-detail/BranchA
 import { BranchContractChart } from "@/components/dashboard/department-detail/BranchContractChart";
 import { BranchContinuationRateChart } from "@/components/dashboard/department-detail/BranchContinuationRateChart";
 import { AchievementLegend } from "@/components/ui/achievement-legend";
+import { EnhancedKPICards } from "@/components/dashboard/EnhancedKPICards";
+import { generateHistoricalTrendData } from "@/data/sample-data-generator";
 
 const DepartmentDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,6 +67,15 @@ const DepartmentDetail = () => {
       }
     };
   }, [branches, periodType]);
+
+  // 統括部の履歴トレンドデータ
+  const departmentHistoricalData = useMemo(() => {
+    return {
+      monthly: generateHistoricalTrendData(branches, 'monthly', 12),
+      quarterly: generateHistoricalTrendData(branches, 'quarterly', 8),
+      yearly: generateHistoricalTrendData(branches, 'yearly', 5)
+    };
+  }, [branches]);
 
   // 支社別データの生成
   const branchData = useMemo(() => {
@@ -164,82 +175,29 @@ const DepartmentDetail = () => {
 
         <div className="space-y-6">
           {/* KPIカード */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 新規ANP */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">新規ANP</p>
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{formatCurrency(totalMetrics.newANP.actual)}</span>
-                      <span className="text-sm text-muted-foreground">/ {formatCurrency(totalMetrics.newANP.plan)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-semibold ${totalMetrics.newANP.achievementRate >= 100 ? 'text-success' : totalMetrics.newANP.achievementRate >= 90 ? 'text-warning' : 'text-destructive'}`}>
-                        達成率 {totalMetrics.newANP.achievementRate.toFixed(1)}%
-                      </span>
-                      {totalMetrics.newANP.achievementRate >= 100 ? (
-                        <TrendingUp className="w-4 h-4 text-success" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-warning" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 新規契約数 */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">新規契約数</p>
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{totalMetrics.newContractCount.actual}件</span>
-                      <span className="text-sm text-muted-foreground">/ {totalMetrics.newContractCount.plan}件</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-semibold ${totalMetrics.newContractCount.achievementRate >= 100 ? 'text-success' : totalMetrics.newContractCount.achievementRate >= 90 ? 'text-warning' : 'text-destructive'}`}>
-                        達成率 {totalMetrics.newContractCount.achievementRate.toFixed(1)}%
-                      </span>
-                      {totalMetrics.newContractCount.achievementRate >= 100 ? (
-                        <TrendingUp className="w-4 h-4 text-success" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-warning" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 継続率 */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">継続率</p>
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{totalMetrics.continuationRate.actual.toFixed(1)}%</span>
-                      <span className="text-sm text-muted-foreground">/ {totalMetrics.continuationRate.plan.toFixed(1)}%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-semibold ${totalMetrics.continuationRate.achievementRate >= 100 ? 'text-success' : totalMetrics.continuationRate.achievementRate >= 90 ? 'text-warning' : 'text-destructive'}`}>
-                        達成率 {totalMetrics.continuationRate.achievementRate.toFixed(1)}%
-                      </span>
-                      {totalMetrics.continuationRate.achievementRate >= 100 ? (
-                        <TrendingUp className="w-4 h-4 text-success" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-warning" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <EnhancedKPICards
+            kpis={[
+              {
+                title: "新規ANP",
+                value: `¥${(totalMetrics.newANP.actual / 1000000).toFixed(0)}M`,
+                achievementRate: totalMetrics.newANP.achievementRate,
+                changeType: totalMetrics.newANP.achievementRate >= 100 ? "positive" : totalMetrics.newANP.achievementRate >= 90 ? "neutral" : "negative"
+              },
+              {
+                title: "新規契約数",
+                value: `${totalMetrics.newContractCount.actual.toLocaleString()}件`,
+                achievementRate: totalMetrics.newContractCount.achievementRate,
+                changeType: totalMetrics.newContractCount.achievementRate >= 100 ? "positive" : totalMetrics.newContractCount.achievementRate >= 90 ? "neutral" : "negative"
+              },
+              {
+                title: "継続率",
+                value: `${totalMetrics.continuationRate.actual.toFixed(1)}%`,
+                achievementRate: totalMetrics.continuationRate.achievementRate,
+                changeType: totalMetrics.continuationRate.achievementRate >= 100 ? "positive" : totalMetrics.continuationRate.achievementRate >= 90 ? "neutral" : "negative"
+              }
+            ]}
+            historicalData={departmentHistoricalData}
+          />
 
           {/* 支社別新規ANP及び目標達成率グラフ */}
           <BranchANPChart 
