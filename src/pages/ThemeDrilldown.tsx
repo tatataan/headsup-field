@@ -55,9 +55,15 @@ export default function ThemeDrilldown() {
 
       const branchStats = deptBranches.map((branch) => {
         const totalAgencies = branch.agentCount;
-        const respondedAgencies = responses.filter(
-          (r) => r.branch_id === branch.id
-        ).length;
+        
+        // Count UNIQUE agencies (not total response records)
+        const uniqueAgencies = new Set(
+          responses
+            .filter((r) => r.branch_id === branch.id)
+            .map((r) => r.agency_id)
+        );
+        const respondedAgencies = uniqueAgencies.size;
+        
         const rate =
           totalAgencies > 0
             ? Math.round((respondedAgencies / totalAgencies) * 100)
