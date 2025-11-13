@@ -1,4 +1,6 @@
 import { HearingHistory } from "@/hooks/useHearingHistory";
+import { departments } from "@/data/departments";
+import { branches } from "@/data/branches";
 
 const majorThemes = [
   { major: "事業承継", weight: 0.25 },
@@ -71,25 +73,42 @@ const staffNames = [
   "伊藤真理子", "山本大輔", "中村由美", "小林隆史", "加藤さくら",
 ];
 
-// Mock agency branches mapping
+// Mock agency branches mapping using real department and branch IDs
 export const generateMockAgencyBranches = () => {
-  const agencies = [
-    { agency_id: "A001", branch_id: "B001", department_id: "D001" },
-    { agency_id: "A002", branch_id: "B001", department_id: "D001" },
-    { agency_id: "A003", branch_id: "B001", department_id: "D001" },
-    { agency_id: "A004", branch_id: "B002", department_id: "D001" },
-    { agency_id: "A005", branch_id: "B002", department_id: "D001" },
-    { agency_id: "A006", branch_id: "B003", department_id: "D002" },
-    { agency_id: "A007", branch_id: "B003", department_id: "D002" },
-    { agency_id: "A008", branch_id: "B004", department_id: "D002" },
-    { agency_id: "A009", branch_id: "B005", department_id: "D003" },
-    { agency_id: "A010", branch_id: "B005", department_id: "D003" },
-    { agency_id: "A011", branch_id: "B006", department_id: "D003" },
-    { agency_id: "A012", branch_id: "B007", department_id: "D004" },
-    { agency_id: "A013", branch_id: "B008", department_id: "D004" },
-    { agency_id: "A014", branch_id: "B009", department_id: "D005" },
-    { agency_id: "A015", branch_id: "B010", department_id: "D005" },
+  const agencies: { agency_id: string; branch_id: string; department_id: string }[] = [];
+  let agencyCounter = 1;
+  
+  // Distribute agencies across departments proportionally
+  // dept-01: 首都圏統括部 (23 branches) - 18 agencies
+  // dept-02: 東日本統括部 (21 branches) - 14 agencies
+  // dept-03: 西日本統括部 (22 branches) - 18 agencies
+  // dept-04: 中部統括部 (13 branches) - 9 agencies
+  // dept-05: 関西統括部 (14 branches) - 11 agencies
+  
+  const departmentDistribution = [
+    { deptId: "dept-01", count: 18 },
+    { deptId: "dept-02", count: 14 },
+    { deptId: "dept-03", count: 18 },
+    { deptId: "dept-04", count: 9 },
+    { deptId: "dept-05", count: 11 },
   ];
+  
+  departmentDistribution.forEach(({ deptId, count }) => {
+    const dept = departments.find(d => d.id === deptId);
+    if (!dept) return;
+    
+    const deptBranches = branches.filter(b => dept.branchIds.includes(b.id));
+    
+    for (let i = 0; i < count; i++) {
+      const branch = deptBranches[i % deptBranches.length];
+      agencies.push({
+        agency_id: `A${String(agencyCounter).padStart(3, '0')}`,
+        branch_id: branch.id,
+        department_id: dept.id,
+      });
+      agencyCounter++;
+    }
+  });
 
   return agencies.map((a, idx) => ({
     id: `ab-${idx + 1}`,
@@ -153,7 +172,7 @@ export const generateMockHearingHistory = (): HearingHistory[] => {
   return records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-// Mock theme distributions
+// Mock theme distributions using real department and branch IDs
 export const generateMockThemeDistributions = () => {
   return [
     {
@@ -164,7 +183,7 @@ export const generateMockThemeDistributions = () => {
       middle_theme: "後継者育成",
       detail_theme: "後継者候補の選定",
       target_type: "department",
-      target_ids: ["D001", "D002", "D003"],
+      target_ids: ["dept-01", "dept-02", "dept-03"],
       distribution_start_date: "2024-11-01",
       distribution_end_date: "2024-11-30",
       is_required: true,
@@ -180,7 +199,7 @@ export const generateMockThemeDistributions = () => {
       middle_theme: "研修制度",
       detail_theme: "新人研修プログラム",
       target_type: "branch",
-      target_ids: ["B001", "B003", "B005"],
+      target_ids: ["br-022", "br-048", "br-072"],
       distribution_start_date: "2024-10-15",
       distribution_end_date: "2024-11-15",
       is_required: false,
@@ -191,15 +210,17 @@ export const generateMockThemeDistributions = () => {
   ];
 };
 
-// Mock theme responses
+// Mock theme responses using real agency, branch, and department IDs
 export const generateMockThemeResponses = () => {
+  const agencyBranches = generateMockAgencyBranches();
+  
   return [
     {
       id: "resp-1",
       distribution_id: "dist-1",
-      agency_id: "A001",
-      branch_id: "B001",
-      department_id: "D001",
+      agency_id: agencyBranches[0].agency_id,
+      branch_id: agencyBranches[0].branch_id,
+      department_id: agencyBranches[0].department_id,
       response_note: "事業承継計画を策定中。後継者候補として長男を選定済み。",
       responded_at: "2024-11-10T10:00:00Z",
       created_at: "2024-11-10T10:00:00Z",
@@ -207,9 +228,9 @@ export const generateMockThemeResponses = () => {
     {
       id: "resp-2",
       distribution_id: "dist-1",
-      agency_id: "A006",
-      branch_id: "B003",
-      department_id: "D002",
+      agency_id: agencyBranches[18].agency_id,
+      branch_id: agencyBranches[18].branch_id,
+      department_id: agencyBranches[18].department_id,
       response_note: "後継者育成プログラムを開始。3年計画で進行中。",
       responded_at: "2024-11-12T14:30:00Z",
       created_at: "2024-11-12T14:30:00Z",
@@ -217,9 +238,9 @@ export const generateMockThemeResponses = () => {
     {
       id: "resp-3",
       distribution_id: "dist-2",
-      agency_id: "A002",
-      branch_id: "B001",
-      department_id: "D001",
+      agency_id: agencyBranches[1].agency_id,
+      branch_id: agencyBranches[1].branch_id,
+      department_id: agencyBranches[1].department_id,
       response_note: "新入社員研修を4月に実施。管理職研修は9月予定。",
       responded_at: "2024-10-20T09:00:00Z",
       created_at: "2024-10-20T09:00:00Z",
