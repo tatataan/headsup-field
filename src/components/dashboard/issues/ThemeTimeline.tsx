@@ -8,11 +8,12 @@ interface ThemeTimelineProps {
 }
 
 const THEME_COLORS = {
-  "経営・戦略": "hsl(var(--chart-1))",
-  "人材・育成": "hsl(var(--chart-2))",
-  "販売・市場": "hsl(var(--chart-3))",
-  "品質・事務": "hsl(var(--chart-4))",
-  "関係性・要望": "hsl(var(--chart-5))",
+  "事業承継": "hsl(var(--chart-1))",
+  "人材育成": "hsl(var(--chart-2))",
+  "業務効率化": "hsl(var(--chart-3))",
+  "販売力強化": "hsl(var(--chart-4))",
+  "リスク管理": "hsl(var(--chart-5))",
+  "コンプライアンス": "hsl(var(--accent))",
 };
 
 export const ThemeTimeline = ({ hearingHistory }: ThemeTimelineProps) => {

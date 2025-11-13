@@ -3,11 +3,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { departments } from "@/data/departments";
 
 const THEME_COLORS: { [key: string]: string } = {
-  "人材・育成": "hsl(var(--chart-1))",
-  "商品": "hsl(var(--chart-2))",
-  "業務運営": "hsl(var(--chart-3))",
-  "システム": "hsl(var(--chart-4))",
-  "その他": "hsl(var(--chart-5))",
+  "事業承継": "hsl(var(--chart-1))",
+  "人材育成": "hsl(var(--chart-2))",
+  "業務効率化": "hsl(var(--chart-3))",
+  "販売力強化": "hsl(var(--chart-4))",
+  "リスク管理": "hsl(var(--chart-5))",
+  "コンプライアンス": "hsl(var(--accent))",
 };
 
 interface DepartmentComparisonChartProps {
