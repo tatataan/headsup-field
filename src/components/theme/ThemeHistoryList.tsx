@@ -219,71 +219,6 @@ export const ThemeHistoryList = () => {
 
   return (
     <div className="space-y-4">
-      {/* Development Tools Panel */}
-      <Card className="border-dashed border-2 border-amber-500 bg-amber-50/50 dark:bg-amber-950/20">
-        <div className="p-4">
-          <button
-            onClick={() => setDevToolsOpen(!devToolsOpen)}
-            className="flex items-center justify-between w-full text-left"
-          >
-            <div className="flex items-center gap-2 flex-wrap">
-              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-              <span className="font-mono font-bold text-amber-900 dark:text-amber-100">
-                DEV TOOLS - 開発用ツール
-              </span>
-              <Badge 
-                variant="outline" 
-                className="border-amber-600 text-amber-700 dark:border-amber-500 dark:text-amber-400"
-              >
-                本番環境では非表示
-              </Badge>
-            </div>
-            {devToolsOpen ? (
-              <ChevronUp className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-            )}
-          </button>
-          
-          {devToolsOpen && (
-            <div className="mt-4 space-y-3 border-t border-amber-300 dark:border-amber-700 pt-4">
-              <p className="text-sm text-amber-700 dark:text-amber-300 font-mono">
-                ※このパネルはダミーデータ生成用です。各テーマの対応データをシミュレートできます。
-              </p>
-              
-              {distributions
-                .filter(d => d.is_required)
-                .map(dist => {
-                  const completionRate = getCompletionRate(dist);
-                  return (
-                    <div 
-                      key={dist.id} 
-                      className="flex items-center justify-between p-3 bg-background rounded border border-amber-200 dark:border-amber-800"
-                    >
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{dist.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          現在の対応率: {completionRate}%
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => simulateMutation.mutate(dist)}
-                        disabled={simulateMutation.isPending}
-                        className="border-amber-500 text-amber-700 hover:bg-amber-50 dark:border-amber-600 dark:text-amber-400 dark:hover:bg-amber-950/50"
-                      >
-                        <RefreshCw className={`w-4 h-4 mr-2 ${simulateMutation.isPending ? 'animate-spin' : ''}`} />
-                        シミュレート
-                      </Button>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
-      </Card>
-
       {/* Theme Distribution Cards */}
       {distributions.map((dist) => {
         const completionRate = dist.is_required ? getCompletionRate(dist) : null;
@@ -355,6 +290,57 @@ export const ThemeHistoryList = () => {
           </Card>
         );
       })}
+
+      {/* Development Tools Panel - Moved to bottom */}
+      <div className="pt-8 mt-8 border-t border-border">
+        <button
+          onClick={() => setDevToolsOpen(!devToolsOpen)}
+          className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors flex items-center gap-1"
+        >
+          {devToolsOpen ? (
+            <ChevronUp className="w-3 h-3" />
+          ) : (
+            <ChevronDown className="w-3 h-3" />
+          )}
+          <span>開発ツール</span>
+        </button>
+        
+        {devToolsOpen && (
+          <div className="mt-4 space-y-3 p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="text-xs text-muted-foreground">
+              ダミーデータ生成用ツール - 各テーマの対応データをシミュレートできます
+            </p>
+            
+            {distributions
+              .filter(d => d.is_required)
+              .map(dist => {
+                const completionRate = getCompletionRate(dist);
+                return (
+                  <div 
+                    key={dist.id} 
+                    className="flex items-center justify-between p-3 bg-background rounded border border-border"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{dist.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        現在の対応率: {completionRate}%
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => simulateMutation.mutate(dist)}
+                      disabled={simulateMutation.isPending}
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${simulateMutation.isPending ? 'animate-spin' : ''}`} />
+                      シミュレート
+                    </Button>
+                  </div>
+                );
+              })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
