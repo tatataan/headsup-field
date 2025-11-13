@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
+import { 
+  generateMockHearingHistory, 
+  generateMockAgencyBranches,
+  generateMockThemeDistributions,
+  generateMockThemeResponses 
+} from "@/data/hearing-data-generator";
 
 export interface HearingHistory {
   id: string;
@@ -22,17 +27,12 @@ export interface EnrichedHearingHistory extends HearingHistory {
   enrichedDepartmentId?: string;
 }
 
-// Fetch agency_branches mapping
+// Fetch agency_branches mapping (using mock data)
 export const useAgencyBranches = () => {
   return useQuery({
     queryKey: ["agency-branches"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("agency_branches")
-        .select("*");
-
-      if (error) throw error;
-      return data as { agency_id: string; branch_id: string; department_id: string }[];
+      return generateMockAgencyBranches();
     },
   });
 };
@@ -41,13 +41,7 @@ export const useHearingHistory = () => {
   return useQuery({
     queryKey: ["hearing-history"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hearing_history")
-        .select("*")
-        .order("date", { ascending: false });
-
-      if (error) throw error;
-      return data as HearingHistory[];
+      return generateMockHearingHistory();
     },
   });
 };
@@ -186,13 +180,7 @@ export const useThemeAnalysis = () => {
   return useQuery({
     queryKey: ["theme-analysis"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hearing_history")
-        .select("*");
-
-      if (error) throw error;
-
-      const hearingData = data as HearingHistory[];
+      const hearingData = generateMockHearingHistory();
 
       // Count themes
       const themeCount: Record<string, number> = {};
