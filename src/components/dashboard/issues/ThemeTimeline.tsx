@@ -18,24 +18,40 @@ const THEME_COLORS = {
 
 export const ThemeTimeline = ({ hearingHistory }: ThemeTimelineProps) => {
   const timelineData = useMemo(() => {
-    const monthlyData: Record<string, Record<string, number>> = {};
+    // Get last 6 months
+    const today = new Date();
+    const months: string[] = [];
+    const monthDates: Date[] = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      monthDates.push(date);
+      months.push(date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' }));
+    }
 
-    hearingHistory.forEach((record) => {
-      const month = new Date(record.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' });
-      
-      if (!monthlyData[month]) {
-        monthlyData[month] = {};
-      }
-      
-      monthlyData[month][record.major_theme] = (monthlyData[month][record.major_theme] || 0) + 1;
+    // Initialize all months with 0 for all themes
+    const monthlyData: Record<string, Record<string, number>> = {};
+    months.forEach(month => {
+      monthlyData[month] = {};
+      Object.keys(THEME_COLORS).forEach(theme => {
+        monthlyData[month][theme] = 0;
+      });
     });
 
-    return Object.entries(monthlyData)
-      .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
-      .map(([month, themes]) => ({
-        month,
-        ...themes
-      }));
+    // Count actual occurrences
+    hearingHistory.forEach((record) => {
+      const recordDate = new Date(record.date);
+      const month = recordDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+      
+      if (monthlyData[month] && THEME_COLORS[record.major_theme as keyof typeof THEME_COLORS]) {
+        monthlyData[month][record.major_theme] = (monthlyData[month][record.major_theme] || 0) + 1;
+      }
+    });
+
+    return months.map(month => ({
+      month,
+      ...monthlyData[month]
+    }));
   }, [hearingHistory]);
 
   const themes = Object.keys(THEME_COLORS);
