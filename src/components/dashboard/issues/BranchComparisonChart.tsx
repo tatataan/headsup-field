@@ -2,14 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { branches } from "@/data/branches";
 import { useMemo } from "react";
-
-const THEME_COLORS: { [key: string]: string } = {
-  "人材・育成": "hsl(var(--chart-1))",
-  "商品": "hsl(var(--chart-2))",
-  "業務運営": "hsl(var(--chart-3))",
-  "システム": "hsl(var(--chart-4))",
-  "その他": "hsl(var(--chart-5))",
-};
+import { useThemes } from "@/hooks/useThemes";
+import { generateThemeColors } from "@/lib/theme-colors";
 
 interface BranchComparisonChartProps {
   data: Array<{
@@ -26,6 +20,19 @@ export const BranchComparisonChart = ({
   onBranchClick,
   topN = 10,
 }: BranchComparisonChartProps) => {
+  const { data: themesData } = useThemes();
+  
+  // Get unique major themes from database
+  const majorThemes = useMemo(() => {
+    if (!themesData) return [];
+    return Array.from(new Set(themesData.map(t => t.major_theme)));
+  }, [themesData]);
+
+  const THEME_COLORS = useMemo(() => 
+    generateThemeColors(majorThemes), 
+    [majorThemes]
+  );
+
   const chartData = useMemo(() => {
     const sorted = [...data].sort((a, b) => b.total - a.total);
     const topBranches = sorted.slice(0, topN);

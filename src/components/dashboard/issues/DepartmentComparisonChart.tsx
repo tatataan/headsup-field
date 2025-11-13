@@ -1,15 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { departments } from "@/data/departments";
-
-const THEME_COLORS: { [key: string]: string } = {
-  "事業承継": "hsl(var(--chart-1))",
-  "人材育成": "hsl(var(--chart-2))",
-  "業務効率化": "hsl(var(--chart-3))",
-  "販売力強化": "hsl(var(--chart-4))",
-  "リスク管理": "hsl(var(--chart-5))",
-  "コンプライアンス": "hsl(var(--accent))",
-};
+import { useThemes } from "@/hooks/useThemes";
+import { generateThemeColors } from "@/lib/theme-colors";
+import { useMemo } from "react";
 
 interface DepartmentComparisonChartProps {
   data: Array<{
@@ -24,6 +18,19 @@ export const DepartmentComparisonChart = ({
   data,
   onDepartmentClick,
 }: DepartmentComparisonChartProps) => {
+  const { data: themesData } = useThemes();
+  
+  // Get unique major themes from database
+  const majorThemes = useMemo(() => {
+    if (!themesData) return [];
+    return Array.from(new Set(themesData.map(t => t.major_theme)));
+  }, [themesData]);
+
+  const THEME_COLORS = useMemo(() => 
+    generateThemeColors(majorThemes), 
+    [majorThemes]
+  );
+
   const chartData = data.map(item => {
     const dept = departments.find(d => d.id === item.departmentId);
     return {

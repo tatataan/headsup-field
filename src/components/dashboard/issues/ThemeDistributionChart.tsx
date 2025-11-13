@@ -1,20 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { useThemes } from "@/hooks/useThemes";
+import { generateThemeColors } from "@/lib/theme-colors";
+import { useMemo } from "react";
 
 interface ThemeDistributionChartProps {
   data: { theme: string; count: number; percentage: number }[];
   onThemeClick?: (theme: string) => void;
 }
 
-const COLORS = {
-  "経営・戦略": "hsl(var(--chart-1))",
-  "人材・育成": "hsl(var(--chart-2))",
-  "販売・市場": "hsl(var(--chart-3))",
-  "品質・事務": "hsl(var(--chart-4))",
-  "関係性・要望": "hsl(var(--chart-5))",
-};
-
 export const ThemeDistributionChart = ({ data, onThemeClick }: ThemeDistributionChartProps) => {
+  const { data: themesData } = useThemes();
+  
+  // Get unique major themes from database
+  const majorThemes = useMemo(() => {
+    if (!themesData) return [];
+    return Array.from(new Set(themesData.map(t => t.major_theme)));
+  }, [themesData]);
+
+  const COLORS = useMemo(() => 
+    generateThemeColors(majorThemes), 
+    [majorThemes]
+  );
+
   return (
     <Card>
       <CardHeader>

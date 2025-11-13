@@ -2,21 +2,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { HearingHistory } from "@/hooks/useHearingHistory";
 import { useMemo } from "react";
+import { useThemes } from "@/hooks/useThemes";
+import { generateThemeColors } from "@/lib/theme-colors";
 
 interface ThemeTimelineProps {
   hearingHistory: HearingHistory[];
 }
 
-const THEME_COLORS = {
-  "事業承継": "hsl(var(--chart-1))",
-  "人材育成": "hsl(var(--chart-2))",
-  "業務効率化": "hsl(var(--chart-3))",
-  "販売力強化": "hsl(var(--chart-4))",
-  "リスク管理": "hsl(var(--chart-5))",
-  "コンプライアンス": "hsl(var(--accent))",
-};
-
 export const ThemeTimeline = ({ hearingHistory }: ThemeTimelineProps) => {
+  const { data: themesData } = useThemes();
+  
+  // Get unique major themes from database
+  const majorThemes = useMemo(() => {
+    if (!themesData) return [];
+    return Array.from(new Set(themesData.map(t => t.major_theme)));
+  }, [themesData]);
+
+  const THEME_COLORS = useMemo(() => 
+    generateThemeColors(majorThemes), 
+    [majorThemes]
+  );
+  
   const timelineData = useMemo(() => {
     // Get last 6 months
     const today = new Date();
@@ -54,7 +60,22 @@ export const ThemeTimeline = ({ hearingHistory }: ThemeTimelineProps) => {
     }));
   }, [hearingHistory]);
 
-  const themes = Object.keys(THEME_COLORS);
+  const themes = majorThemes;
+  
+  if (!themesData || majorThemes.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>課題発生トレンド</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+            テーマデータを読み込んでいます...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
