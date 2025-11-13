@@ -87,7 +87,7 @@ export const EnhancedKPICards = ({ kpis, historicalData, onPeriodChange }: Enhan
                 <p className={`text-4xl md:text-5xl font-bold ${getValueColor(kpi.changeType)} animate-count-up group-hover:text-accent transition-colors`}>
                   {kpi.value}
                 </p>
-                {kpi.title !== "継続率" && (
+                {!kpi.title.includes("継続率") && (
                   <p className="text-sm text-muted-foreground">
                     達成率: {kpi.achievementRate.toFixed(1)}%
                   </p>

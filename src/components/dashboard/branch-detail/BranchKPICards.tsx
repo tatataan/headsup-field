@@ -110,7 +110,7 @@ export const BranchKPICards = ({ kpi, historicalData }: BranchKPICardsProps) => 
                 {card.subValue && (
                   <p className="text-sm text-muted-foreground">{card.subValue}</p>
                 )}
-                {card.change !== undefined && card.title !== "継続率" && (
+                {card.change !== undefined && !card.title.includes("継続率") && (
                   <p className="text-sm text-muted-foreground">達成率: {(100 + card.change).toFixed(1)}%</p>
                 )}
               </div>
